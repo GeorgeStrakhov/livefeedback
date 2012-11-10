@@ -77,6 +77,14 @@ function createPoint(details) {
   
 };
 
+function addJoiner() {
+  if(Session.get("currentStream")) {
+    Streams.update({_id: Session.get("currentStream")},{$addToSet: {joiners: Meteor.userId()}});
+  } else {
+    alert("error! no current stream!");
+  }
+};
+
 function setActivePoint(which) { //which can be "next", "prev" or "rand"
   console.log("not ready yet!");
   /* FIX!
@@ -131,6 +139,7 @@ Template.myStreams.events = {
       if (streamIAmJoining && streamIAmJoining._id) {
         //console.log(streamIAmJoining._id);
         Router.navigate("stream/"+streamIAmJoining._id, true);
+        addJoiner();
       } else {
         alert("sorry, there is no stream with such name"); 
       }
