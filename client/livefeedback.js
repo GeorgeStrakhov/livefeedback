@@ -109,6 +109,14 @@ Template.myStreams.events = {
   },
 };
 
+Template.ownerView.events = {
+  'click #newPointBtn' : function() {
+    createPoint({
+      content: $("#newPointContent").val(),
+    });
+  },
+};
+
 ////////// Tracking selected stream in URL //////////
 
 var StreamsRouter = Backbone.Router.extend({

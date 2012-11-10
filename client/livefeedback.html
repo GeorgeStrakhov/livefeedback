@@ -68,7 +68,22 @@
 </template>
 
 <template name="ownerView">
-  stream management view under construction
+  <div>
+    <ul>
+      {{#each currentStream.points}}
+        <li>{{> singlePointTemplate}}</li>
+      {{/each}}
+    </ul>
+  </div>
+  <div>
+  <div>
+    <input type="text" id="newPointContent"/>
+    <button class="btn" id="newPointBtn">add</button>
+  </div>
+</template>
+
+<template name="singlePointTemplate">
+  {{this.content}} single point...
 </template>
 
 <template name="participantView">
