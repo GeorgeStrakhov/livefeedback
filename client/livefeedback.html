@@ -30,7 +30,7 @@
   <div>
     <ul>
       {{#each allStreams}}
-        <li><a href="#stream/{{this._id}}">{{this.name}}</a></li>
+        {{> singleStreamItem}}
       {{/each}}
     </ul>
   </div>
@@ -46,6 +46,10 @@
       <button class="btn" id="joinStreamBtn">go</btn>
     </div>
   </div>
+</template>
+
+<template name="singleStreamItem">
+  <li class="thisStream{{this.status}}"><a href="#stream/{{this._id}}">{{this.name}}</a> - joiners: {{joinersCount}}</li>
 </template>
 
 <template name="singleStream">

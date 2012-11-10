@@ -140,6 +140,10 @@ Template.myStreams.events = {
   },
 };
 
+Template.singleStreamItem.joinersCount = function() {
+  return this.joiners.length;
+};
+
 Template.ownerView.events = {
   'click #newPointBtn' : function() {
     createPoint({
