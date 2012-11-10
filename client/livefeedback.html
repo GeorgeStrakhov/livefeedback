@@ -32,6 +32,9 @@
   </div>
   <div>
     <ul>
+      {{#if noStreamsYet}}
+        <li>looks like you haven't created any streams yet...</li>
+      {{/if}}
       {{#each allStreams}}
         {{> singleStreamItem}}
       {{/each}}
@@ -76,7 +79,9 @@
 </template>
 
 <template name="signIn">
-  under construction. here we display stream name & sign in
+  <h1>Hello!</h1>
+  <p>In order to provide your live feedback to the stream called "{{currentStream.name}}", please {{loginButtons}} </p>
+  <p>this live feedback is powered by <a href="http://livefeedback.mobi" target="_blank">LiveFeedback.mobi</a></p>
 </template>
 
 <template name="ownerView">
@@ -100,7 +105,7 @@
 </template>
 
 <template name="singlePointTemplate">
-  {{this.content}}
+  {{{this.content}}}
 </template>
 
 <template name="participantView">
