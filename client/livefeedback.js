@@ -71,9 +71,8 @@ function setActivePoint(which) { //which can be "next", "prev" or "rand"
 ////////// Template specific behavior ////////////
 
 Template.myStreams.allStreams = function() {
-  var allStreams = Streams.find({owners: [Meteor.userId()]}).fetch();
+  var allStreams = Streams.find({owners: {$all: [Meteor.userId()]}}).fetch(); //should match if current use is one of the owners
   return allStreams;
-  //console.log(allStreams);
 };
 
 Template.myStreams.events = {
