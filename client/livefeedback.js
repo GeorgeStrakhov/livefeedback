@@ -1,3 +1,7 @@
 Handlebars.registerHelper("helloWorld", function(){ //current user
-  return "hey, dude!";
+  if(Meteor.userLoaded()) {
+    return Meteor.user().profile.name;
+  } else {
+    return "anonimous";
+  }
 });
