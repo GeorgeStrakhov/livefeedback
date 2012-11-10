@@ -3,3 +3,7 @@
 .thisStreamactive {
   background: #EFE;
 }
+
+li.active {
+	background-color: green;
+}

@@ -85,6 +85,29 @@ function addJoiner() {
   }
 };
 
+function editPoint(point, details) {
+  var allPoints = getCurrentStreamPoints();
+  $.each(allPoints, function(i){
+    if (typeof details.isActive != 'undefined') {
+      allPoints[i].isActive = false;
+    };
+    if (this.timestamp == point.timestamp) {
+      $.each(details, function(attr) {
+        allPoints[i][attr] = details[attr];
+      });
+    }
+  });
+  Streams.update({_id: Session.get("currentStream")},{$set: {points: allPoints}});
+}
+
+function getCurrentStreamPoints() { // just get all current points
+  return Streams.findOne(Session.get("currentStream")).points;
+}
+
+function makePointActive(point) { // shorthand for editPoint
+  editPoint(point, {isActive: true});
+}
+
 function setActivePoint(which) { //which can be "next", "prev" or "rand"
   console.log("not ready yet!");
   /* FIX!
@@ -155,10 +178,33 @@ Template.singleStreamItem.joinersCount = function() {
 
 Template.ownerView.events = {
   'click #newPointBtn' : function() {
+    if($("#newPointContent").val() == "") {
+      alert('hey, stfu and put in a point');
+      return false
+    };
     createPoint({
       content: $("#newPointContent").val(),
     });
   },
+  'click .delete' : function() {
+    // delete
+  },
+  'click .edit' : function(e) {
+    var editButton = $(e.srcElement);
+    var pointContent = editButton.siblings('span.content');
+    if(pointContent.has('input.pointEditor').length > 0) {
+      editButton.text('edit');
+      editPoint(this, {content: pointContent.find('input.pointEditor').val()}); 
+    } 
+    else {
+      var currentHtml = pointContent.html();
+      pointContent.html('<input type="text" class="pointEditor" value="'+currentHtml+'"/>');
+      editButton.text('submit');
+    }
+  }, 
+  'click .makeActive' : function() {
+    makePointActive(this);
+  }
 };
 
 ////////// Tracking selected stream in URL //////////
