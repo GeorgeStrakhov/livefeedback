@@ -8,3 +8,5 @@ Meteor.startup(function() {
     console.log("configured facebook login");
   }
 });
+
+Streams = new Meteor.Collection("streams");

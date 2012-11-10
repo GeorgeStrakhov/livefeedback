@@ -42,7 +42,7 @@ data structure
 
 Session variables (managing client side state), registered as handlebars helpers, accessible from any template
 =================
-* "currentStream" - id of the current stream
+* "activeStream" - id of the current stream
 * "activePoint" - {} active point (reactively synced(!))
 * "myOwnStream" - true || false (if it's my own stream)
 

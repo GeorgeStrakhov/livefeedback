@@ -10,7 +10,7 @@
   {{#if urlPart}} <!-- if there the url is something glike http://livefeedback.mobi/streams/id-->
     {{> singleStream}}
   {{else}}
-    {{#if currentUser}}
+    {{#if currentUser}} <!-- currentUser is one of the default helpers in Meteor-->
       {{> myStreams}}
     {{else}}
       {{> welcome}}
@@ -20,10 +20,12 @@
 
 <template name="welcome">
   welcome screen under construction...
+  {{loginButtons}}
 </template>
 
 <template name="myStreams">
   myStreams under construction...
+  {{loginButtons}}
 </template>
 
 <template name="singleStream">
