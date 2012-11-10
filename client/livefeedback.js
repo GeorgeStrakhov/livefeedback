@@ -1,6 +1,5 @@
 Streams = new Meteor.Collection("streams");
 
-
 ////////// global reactive helpers ///////////
 Handlebars.registerHelper("urlPart", function() {
   return Session.get("urlPart");
@@ -28,6 +27,7 @@ Handlebars.registerHelper("myOwnStream", function() {
 
 Meteor.autosubscribe(function() {
   Meteor.subscribe("currentStream", Session.get("currentStream"));
+  console.log('stream changed');
   var currentStream = Streams.findOne(Session.get("currentStream"));
   Session.set("myOwnStream", false);
   if(currentStream) {
@@ -35,12 +35,25 @@ Meteor.autosubscribe(function() {
       if(this.toString() == Meteor.userId())// Meteor.user()._id
         Session.set("myOwnStream", true);
     });
+    //walk through the points and if this stream is active and there is no active point & I'm the owner - then set the first point active
+    if(Session.get("myOwnStream") && currentStream.status == "active") {
+      var noActivePoint = true
+      $.each(currentStream.points, function() {
+        if(this.isActive == true)
+          noActivePoint = false;
+      });
+      if(currentStream.points[0] && noActivePoint) {
+        console.log('no active point. setting the first one');
+        currentStream.points[0].isActive = true;
+        Streams.update({_id: Session.get("currentStream")}, {$set: {points: currentStream.points}});
+      }        
+    }
   }
 });
 
 ////////// global helper functions ////////////
 function createStream(details) {
-  Streams.insert({
+  return Streams.insert({
     name: details.name, 
     owners: (details.owners) ? details.owners : [Meteor.userId()],
     status: (details.status) ? details.status : "active",
@@ -107,6 +120,24 @@ Template.myStreams.events = {
       alert("please put in a name");
     }
   },
+  'click #joinStream' : function() {
+    $("#joinStreamForm").toggle();
+    $("#joinStreamName").focus();    
+  },
+  'click #joinStreamBtn' : function() {
+    if($("#joinStreamName").val() != "") {
+      var streamIAmJoining = Streams.findOne({name: $("#joinStreamName").val()});
+      //console.log(streamIAmJoining);
+      if (streamIAmJoining && streamIAmJoining._id) {
+        //console.log(streamIAmJoining._id);
+        Router.navigate("stream/"+streamIAmJoining._id, true);
+      } else {
+        alert("sorry, there is no stream with such name"); 
+      }
+    } else {
+      alert("please enter the name of the stream!");
+    }
+  },
 };
 
 Template.ownerView.events = {
@@ -134,7 +165,7 @@ var StreamsRouter = Backbone.Router.extend({
     Session.set("urlPart", true);
   },
   setStream: function (streamId) {
-    this.navigate(streamId, true);
+    this.navigate("stream/".streamId, true);
   }
 });
 

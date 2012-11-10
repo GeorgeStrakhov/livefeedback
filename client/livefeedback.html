@@ -40,6 +40,11 @@
       <input type="text" id="newStreamName" placeholder="Your stream name!" />
       <button class="btn" id="createNewStreamBtn">ok</button>
     </div>
+    <button class="btn" id="joinStream">go to stream</button>
+    <div class="hide" id="joinStreamForm">
+      <input type="text" id="joinStreamName" placeholder="please enter a name of the stream"/>
+      <button class="btn" id="joinStreamBtn">go</btn>
+    </div>
   </div>
 </template>
 
@@ -83,7 +88,7 @@
 </template>
 
 <template name="singlePointTemplate">
-  {{this.content}} single point...
+  {{this.content}}
 </template>
 
 <template name="participantView">
