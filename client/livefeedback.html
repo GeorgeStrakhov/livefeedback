@@ -1,5 +1,5 @@
 <head>
-  <title>livefeedback</title>
+  <title>LiveFeedBack.mobi - get live feedback from any audience</title>
 </head>
 
 <body>
@@ -7,7 +7,47 @@
 </body>
 
 <template name="app">
-  {{loginButtons}}
-  <br />
-  {{helloWorld}}
+  {{#if urlPart}} <!-- if there the url is something glike http://livefeedback.mobi/streams/id-->
+    {{> singleStream}}
+  {{else}}
+    {{#if currentUser}}
+      {{> myStreams}}
+    {{else}}
+      {{> welcome}}
+    {{/if}}
+  {{/if}}
+</template>
+
+<template name="welcome">
+  welcome screen under construction...
+</template>
+
+<template name="myStreams">
+  myStreams under construction...
+</template>
+
+<template name="singleStream">
+  {{#if currentUser}}
+    {{#if myOwnStream}}
+      {{> ownerView}}
+    {{else}}
+      {{> participantView}}
+    {{/if}}
+  {{else}}
+    {{> signIn}}
+  {{/if}}
+</template>
+
+<template name="signIn">
+  under construction. here we display stream name & sign in
+  OR "sorry, there is no such stream" if the stream with such a name is not found
+</template>
+
+<template name="ownerView">
+  stream management view under construction
+</template>
+
+<template name="participantView">
+  thumbs up and down view for the participant
+  OR finished messaging if the stream is finished
 </template>

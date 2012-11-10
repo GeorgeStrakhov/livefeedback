@@ -21,6 +21,31 @@ technology
 meteor
 bootstrap
 
+data structure
+==============
+* user -> Meteor.user()
+* Streams -> Meteor Collection
+* each stream -> object {
+  owners: [Meteor.userId(), ...] //grant permission fucntionality - add email
+  status: "active" || "finished",
+  joiners: [userId, userId, userId...],
+  points: [{point}, {point}, {point}...],
+  }
+* each point -> object {
+  timestamp: new Date(),
+  content: "html string",
+  isActive: true || false,
+  comments: [{from: userId, text:""},{from: userID, text: ""}...],
+  thumbsUp: [userId, userId, ...]
+  thumbsDown: [userId, userId, userId...]
+  }
+
+Session variables (managing client side state), registered as handlebars helpers, accessible from any template
+=================
+* "currentStream" - id of the current stream
+* "activePoint" - {} active point (reactively synced(!))
+* "myOwnStream" - true || false (if it's my own stream)
+
 todo
 ====
 * user stories
@@ -28,3 +53,7 @@ todo
 * prototype(!)
 * customer validation
 * business-plan & story & stuff
+
+additional ideas
+================
+* timer for auto advance (question of the day etc.)
