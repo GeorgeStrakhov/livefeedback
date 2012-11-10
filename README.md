@@ -26,6 +26,8 @@ data structure
 * user -> Meteor.user()
 * Streams -> Meteor Collection
 * each stream -> object {
+  ._id: -> meteor id
+  name: "name"
   owners: [Meteor.userId(), ...] //grant permission fucntionality - add email
   status: "active" || "finished",
   joiners: [userId, userId, userId...],
@@ -40,9 +42,9 @@ data structure
   thumbsDown: [userId, userId, userId...]
   }
 
-Session variables (managing client side state), registered as handlebars helpers, accessible from any template, always up to date
+Session variables (managing client side state), registered as handlebars helpers, accessible from any template, always up to date,
 =================
-* "activeStream" -{} active stream
+* "currentStream" -{} current stream
 * "activePoint" - {} active point (reactively synced(!))
 * "myOwnStream" - true || false (if it's my own stream)
 

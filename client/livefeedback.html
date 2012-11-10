@@ -24,12 +24,27 @@
 </template>
 
 <template name="myStreams">
-  myStreams under construction...
-  {{loginButtons}}
+  <div>
+    {{loginButtons}}
+  </div>
+  <div>
+    <ul>
+      {{#each allStreams}}
+        <li>{{this.name}}</li>
+      {{/each}}
+    </ul>
+  </div>
+  <div>
+    <button class="btn" id="createNewStream">create new</button>
+    <div class="hide" id="newStreamCreate">
+      <input type="text" id="newStreamName" placeholder="Your stream name!" />
+      <button class="btn" id="createNewStreamBtn">ok</button>
+    </div>
+  </div>
 </template>
 
 <template name="singleStream">
-  {{#if activeStream._id}} <!-- if such a stream exists -->
+  {{#if currentStream._id}} <!-- if such a stream exists -->
     {{#if currentUser}}
       {{#if myOwnStream}}
         {{> ownerView}}
@@ -57,10 +72,10 @@
 </template>
 
 <template name="participantView">
-  {{#if activeStream.status "finished"}}
+  {{#if currentStream.status "finished"}}
     {{> finishedStreamView}}
   {{/if}}
-  {{#if activeStream.status "active"}}
+  {{#if currentStream.status "active"}}
     thumbs up and down view for the participant
   {{/if}}
 </template>
