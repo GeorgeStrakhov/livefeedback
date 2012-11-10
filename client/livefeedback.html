@@ -71,7 +71,12 @@
   <div>
     <ul>
       {{#each currentStream.points}}
-        <li>{{> singlePointTemplate}}</li>
+        <li class="{{#if this.isActive}}active{{/if}}">
+          <span class="content">{{> singlePointTemplate}}</span>
+          <button class="edit btn btn-mini">edit</button>
+          <button class="delete btn btn-danger btn-mini">delete</button>
+          <button class="makeActive btn btn-success btn-mini">activate</button>
+        </li>
       {{/each}}
     </ul>
   </div>
@@ -83,7 +88,7 @@
 </template>
 
 <template name="singlePointTemplate">
-  {{this.content}} single point...
+  {{this.content}}
 </template>
 
 <template name="participantView">
