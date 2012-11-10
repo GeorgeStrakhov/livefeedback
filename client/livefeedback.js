@@ -26,6 +26,17 @@ Handlebars.registerHelper("myOwnStream", function() {
   return Session.get("myOwnStream");
 });
 
+Meteor.autosubscribe(function() {
+  Meteor.subscribe("currentStream", Session.get("currentStream"));
+  var currentStream = Streams.findOne(Session.get("currentStream"));
+  if(currentStream) {
+    $.each(currentStream.owners, function() {
+      if(this.toString() == Meteor.userId())
+        Session.set("myOwnStream", true);
+    });
+  }
+});
+
 ////////// global helper functions ////////////
 function createStream(details) {
   Streams.insert({
