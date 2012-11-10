@@ -7,7 +7,11 @@ Handlebars.registerHelper("urlPart", function() {
 });
 
 Handlebars.registerHelper("currentStream", function() {
-  return Streams.findOne(Session.get("currentStream"));
+  return Streams.findOne(Session.get("currentStream"));  
+});
+
+Handlebars.registerHelper("currentStreamStatus", function(status) { //current app state e.g. "creatingNewList" etc. used to show modals etc.
+  return Streams.findOne(Session.get("currentStream")).status == status;
 });
 
 Handlebars.registerHelper("activePoint", function() {

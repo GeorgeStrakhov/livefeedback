@@ -72,10 +72,10 @@
 </template>
 
 <template name="participantView">
-  {{#if currentStream.status "finished"}}
+  {{#if currentStreamStatus "finished"}}
     {{> finishedStreamView}}
   {{/if}}
-  {{#if currentStream.status "active"}}
+  {{#if currentStreamStatus "active"}}
     thumbs up and down view for the participant
   {{/if}}
 </template>
