@@ -29,9 +29,10 @@ Handlebars.registerHelper("myOwnStream", function() {
 Meteor.autosubscribe(function() {
   Meteor.subscribe("currentStream", Session.get("currentStream"));
   var currentStream = Streams.findOne(Session.get("currentStream"));
+  Session.set("myOwnStream", false);
   if(currentStream) {
     $.each(currentStream.owners, function() {
-      if(this.toString() == Meteor.userId())
+      if(this.toString() == Meteor.userId())// Meteor.user()._id
         Session.set("myOwnStream", true);
     });
   }
@@ -41,7 +42,7 @@ Meteor.autosubscribe(function() {
 function createStream(details) {
   Streams.insert({
     name: details.name, 
-    owners: (details.owners) ? details.owners : [],
+    owners: (details.owners) ? details.owners : [Meteor.userId()],
     status: (details.status) ? details.status : "active",
     joiners: [],
     points: []
