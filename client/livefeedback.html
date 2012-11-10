@@ -29,20 +29,27 @@
 </template>
 
 <template name="singleStream">
-  {{#if currentUser}}
-    {{#if myOwnStream}}
-      {{> ownerView}}
+  {{#if activeStream._id}} <!-- if such a stream exists -->
+    {{#if currentUser}}
+      {{#if myOwnStream}}
+        {{> ownerView}}
+      {{else}}
+        {{> participantView}}
+      {{/if}}
     {{else}}
-      {{> participantView}}
+      {{> signIn}}
     {{/if}}
   {{else}}
-    {{> signIn}}
+    {{> page404}}
   {{/if}}
+</template>
+
+<template name="page404">
+  404, no such stream exists
 </template>
 
 <template name="signIn">
   under construction. here we display stream name & sign in
-  OR "sorry, there is no such stream" if the stream with such a name is not found
 </template>
 
 <template name="ownerView">
@@ -50,6 +57,14 @@
 </template>
 
 <template name="participantView">
-  thumbs up and down view for the participant
-  OR finished messaging if the stream is finished
+  {{#if activeStream.status "finished"}}
+    {{> finishedStreamView}}
+  {{/if}}
+  {{#if activeStream.status "active"}}
+    thumbs up and down view for the participant
+  {{/if}}
+</template>
+
+<template name="finishedStreamView">
+  finished stream ciew under coonstruction...
 </template>
