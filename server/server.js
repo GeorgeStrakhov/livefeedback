@@ -83,30 +83,9 @@ Streams.allow({
         return false;
     }
     //disallow if I'm trying to add more than one vote from myself to a point
-    var alreadyVoted = false;
     if(modifier['$set']) {
-      var points = modifier['$set'].points;
-      if(points) { //we're checking here that there is no such point in the new points array for which I have more than one vote
-        for (var i=0; i<points.length; i++) {
-          //console.log(points[i]);
-          var point = points[i];
-          var myThumbsUpOrDown = 0;
-          for(var i=0; i<point.thumbsUp.length; i++) {
-            if(point.thumbsUp[i] == userId)
-              myThumbsUpOrDown++;
-          }
-          for(var i=0; i<point.thumbsDown.length; i++) {
-            if(point.thumbsDown[i] == userId)
-              myThumbsUpOrDown++;
-          }
-          if(myThumbsUpOrDown > 1) {
-            return false;
-          }
-        }
-      }
-    }
-    if(alreadyVoted) {
-      return false;
+      //console.log(modifier["$set"].points);
+      //return false
     }
     //if non of the above returned false -> we think it's ok so we return true
     return true;
@@ -119,9 +98,10 @@ Streams.allow({
 /////////publish stuff///////////
 
 Meteor.publish("streams", function () { //only publish the streams to the Client of which he/she is an owner or a joiner of
-  return Streams.find();
+  return Streams.find({});
 });
 
-Meteor.publish("userDirectory", function () {
+Meteor.publish("directory", function () {
   return Meteor.users.find({}, {fields: {profile: 1}});
 });
+
