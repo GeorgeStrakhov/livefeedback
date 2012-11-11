@@ -20,7 +20,7 @@
 </body>
 
 <template name="loading">
-  <img src="loader.gif"/>
+  <img src="img/loader.gif"/>
 </template>
 
 <template name="app">
@@ -117,7 +117,7 @@
         {{> signIn}}
       {{/if}}
     {{else}}
-        {{> page404}}
+        {{> loading}}
     {{/if}}
 </template>
 
@@ -245,7 +245,7 @@
             <div class="row-fluid">
               <div class="span12 center">
                 <h4><strong>
-                  You voted <span class="btn {{#if voted "up"}}btn-success{{else}}btn-danger{{/if}}">{{voted}}!</span>
+                  You voted <span class="btn btn-vote-{{voted}}">{{voted}}!</span>
                 </strong></h4>
               </div>
             </div>
@@ -277,10 +277,9 @@
 </template>
 
 <template name="finishedStreamView">
-  The stream: <strong>{{currentStream.name}}</strong> has ended, thank you for participating.
-  <p></p>
-  <p>For information and updates please sign up for our zero-spam mailing list:
-  <textarea type="text" id="newsletterEmail" placeholder="type any HTML and be happy" class=""/>
-  <button class="btn" id="submitNewsletter">Submit</button>
-  </p>
+  <div class="row-fluid">
+    <div class="container-finish">
+      <h3>The stream: <strong>{{currentStream.name}}</strong> has ended, thank you for participating.</h3>
+    </div>
+  </div>
 </template>

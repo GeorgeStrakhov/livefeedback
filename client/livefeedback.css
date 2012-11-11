@@ -59,7 +59,7 @@ li.point img {
 	max-height: 200px;
 }
 
-.participant-view .container-results, .participant-view .container-feedback {
+.participant-view .container-results, .participant-view .container-feedback, .container-finish {
 	background-color: #fff;
 	border: 1px solid #CCC;
 	border-radius: 5px;
@@ -68,7 +68,10 @@ li.point img {
 .participant-view .container-feedback{
 	background-color: #dddddd;
 }
-
+.container-finish{
+	background-color: #ffffff;
+	padding: 60px 30px;
+}
 .box-vote {
 	padding: 3px;
 	border-radius: 10px;
@@ -80,4 +83,10 @@ li.point img {
 .center {
 	text-align: center;
 	margin: 0 auto;
+}
+.btn-vote-up {
+	border-color: green;
+}
+.btn-vote-down {
+	border-color: red;
 }
