@@ -24,6 +24,10 @@ li.point .btn-group button {
 	/*margin: 0px 2px;*/
 	display: none;
 }
+li.point img {
+	max-width: 50px;
+	max-height: 50px;
+}
 .inputNewPoint {
 	/*margin-top: 10px;*/
 	border-radius: 5px;
