@@ -20,7 +20,10 @@ ul.points {
 	list-style: none;
 }
 li.point button {
-	float:right;
-	margin: 0px 2px;
+	/*float:right;*/
+	/*margin: 0px 2px;*/
 	display: none;
+}
+.inputNewPoint {
+	margin-top: 10px;
 }

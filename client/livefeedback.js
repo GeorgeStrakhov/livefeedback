@@ -222,10 +222,7 @@ Template.ownerView.rendered = function() {
   $('li.point').on({
     hover : function(){
       $(this).find('button').toggle();
-    },
-    // dblclick : function() {
-    //   $(this).find('.edit').trigger('click');
-    // }
+    }
   });
 };
 
@@ -275,7 +272,7 @@ Template.ownerView.events = {
   },
   'click .edit' : function(e) {
     var editButton = $(e.srcElement);
-    var pointContent = editButton.siblings('span.content');
+    var pointContent = editButton.parent().siblings('span.content');
     if(pointContent.has('input.pointEditor').length > 0) {
       editButton.text('edit');
       editPoint(this, {content: pointContent.find('input.pointEditor').val()}); 
@@ -285,7 +282,7 @@ Template.ownerView.events = {
       var input = $('<input type="text" class="pointEditor span3"/>');
       input.keypress(function(e){
         if(e.keyCode == 13) 
-          $(this).parent().siblings('.edit').trigger('click');
+          $(this).parent().find('.edit').trigger('click');
       });
       pointContent.html(input.val(currentHtml));
       editButton.text('submit');
@@ -294,6 +291,15 @@ Template.ownerView.events = {
   'click .makeActive' : function() {
     makePointActive(this);
   }
+};
+
+Template.singlePointTemplate.allThumbsUp = function() {
+  var thumbsString = (this.thumbsUp.length == 0) ? '0' : '+'+this.thumbsUp.length.toString();
+  return thumbsString;
+};
+Template.singlePointTemplate.allThumbsDown = function() {
+  var thumbsString = (this.thumbsDown.length == 0) ? '0' : '-'+this.thumbsDown.length.toString();  
+  return thumbsString;
 };
 
 ////////// Tracking selected stream in URL //////////
