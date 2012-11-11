@@ -35,19 +35,6 @@ Meteor.autosubscribe(function() {
       if(this.toString() == Meteor.userId())// Meteor.user()._id
         Session.set("myOwnStream", true);
     });
-    //walk through the points and if this stream is active and there is no active point & I'm the owner - then set the first point active
-    if(Session.get("myOwnStream") && currentStream.status == "active") {
-      var noActivePoint = true
-      $.each(currentStream.points, function() {
-        if(this.isActive == true)
-          noActivePoint = false;
-      });
-      if(currentStream.points[0] && noActivePoint) {
-        console.log('no active point. setting the first one');
-        currentStream.points[0].isActive = true;
-        Streams.update({_id: Session.get("currentStream")}, {$set: {points: currentStream.points}});
-      }        
-    }
   }
 });
 
@@ -63,7 +50,9 @@ function createStream(details) {
 };
 
 function createPoint(details) {
-  
+  if (typeof details.isActive != 'undefined') {
+    makeAllPointsInActive();
+  };
   var newPoint = {
     timestamp: new Date(),
     content: (details.content) ? details.content : "?",
@@ -72,9 +61,7 @@ function createPoint(details) {
     thumbsUp: [],
     thumbsDown: []
   };
-  
   Streams.update({_id: Session.get("currentStream")}, {$push: {points: newPoint}});  
-  
 };
 
 function addJoiner() {
@@ -104,8 +91,26 @@ function getCurrentStreamPoints() { // just get all current points
   return Streams.findOne(Session.get("currentStream")).points;
 }
 
+function makeAllPointsInActive() {
+  var allPoints = getCurrentStreamPoints();
+  $.each(allPoints, function(i) {
+    allPoints[i].isActive = false;
+  });
+  Streams.update({_id: Session.get("currentStream")},{$set: {points: allPoints}});
+}
+
 function makePointActive(point) { // shorthand for editPoint
   editPoint(point, {isActive: true});
+}
+
+function deletePoint(point) {
+  var allPoints = getCurrentStreamPoints();
+  $.each(allPoints, function(i){
+    if (this.timestamp == point.timestamp) {
+      allPoints.splice(i,1);
+    }
+  });
+  Streams.update({_id: Session.get("currentStream")},{$set: {points: allPoints}});
 }
 
 function setActivePoint(which) { //which can be "next", "prev" or "rand"
@@ -175,6 +180,16 @@ Template.myStreams.events = {
 Template.singleStreamItem.joinersCount = function() {
   return this.joiners.length;
 };
+Template.ownerView.rendered = function() {
+  $('li.point').on({
+    hover : function(){
+      $(this).find('button').toggle();
+    },
+    // dblclick : function() {
+    //   $(this).find('.edit').trigger('click');
+    // }
+  });
+};
 
 Template.ownerView.events = {
   'click #newPointBtn' : function() {
@@ -185,9 +200,26 @@ Template.ownerView.events = {
     createPoint({
       content: $("#newPointContent").val(),
     });
+    $("#newPointContent").val('');
+    $("#newPointContent").focus();
+  },
+  'click #newPointBtnAndActivate': function() {
+    if($("#newPointContent").val() == "") {
+      alert('hey, stfu and put in a point');
+      return false
+    };
+    createPoint({
+      content: $("#newPointContent").val(),
+      isActive: true
+    });
+    $("#newPointContent").val('');
+    $("#newPointContent").focus();
+  },
+  'keypress #newPointContent' : function(e) {
+    if(e.keyCode == 13 ) $('#newPointBtn').trigger('click');
   },
   'click .delete' : function() {
-    // delete
+    deletePoint(this);
   },
   'click .edit' : function(e) {
     var editButton = $(e.srcElement);
@@ -198,7 +230,12 @@ Template.ownerView.events = {
     } 
     else {
       var currentHtml = pointContent.html();
-      pointContent.html('<input type="text" class="pointEditor" value="'+currentHtml+'"/>');
+      var input = $('<input type="text" class="pointEditor span3"/>');
+      input.keypress(function(e){
+        if(e.keyCode == 13) 
+          $(this).parent().siblings('.edit').trigger('click');
+      });
+      pointContent.html(input.val(currentHtml));
       editButton.text('submit');
     }
   }, 
@@ -233,3 +270,5 @@ Router = new StreamsRouter;
 Meteor.startup(function () {
   Backbone.history.start();//{pushState: true});
 });
+
+// JQUERY SHIT

@@ -81,26 +81,27 @@
 
 <template name="ownerView">
   <div>
-    <ul>
+    <h3>Stream points</h3>
+    <ul class="points span4 clearfix">
       {{#each currentStream.points}}
-        <li class="{{#if this.isActive}}active{{/if}}">
+        <li class="{{#if this.isActive}}active {{/if}}point">
           <span class="content">{{> singlePointTemplate}}</span>
           <button class="edit btn btn-mini">edit</button>
           <button class="delete btn btn-danger btn-mini">delete</button>
           <button class="makeActive btn btn-success btn-mini">activate</button>
         </li>
       {{/each}}
+      <li>
+        <input type="text" id="newPointContent" placeholder="type any HTML and be happy" class="span3"/>
+        <button class="btn span1" id="newPointBtn">add</button>
+        <button class="btn" id="newPointBtnAndActivate">add and make active</button>
+      </li>
     </ul>
-  </div>
-  <div>
-  <div>
-    <input type="text" id="newPointContent"/>
-    <button class="btn" id="newPointBtn">add</button>
   </div>
 </template>
 
 <template name="singlePointTemplate">
-  {{this.content}}
+  {{{this.content}}}
 </template>
 
 <template name="participantView">
