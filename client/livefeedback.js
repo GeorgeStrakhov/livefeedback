@@ -263,6 +263,9 @@ Template.singleStreamItem.namesOfPeopleWhoJoined = function() {
 };
 
 Template.ownerView.events = {
+  'click .viewFeedback' : function(e) {
+    $(e.srcElement).siblings('.modal').modal('show');
+  },
   'click .navigatePoints' : function(e) {
     var currentPoints = getCurrentStreamPoints();
     var numberOfActivePoint;
@@ -385,8 +388,7 @@ Template.ownerView.events = {
   }
 };
 Template.modalTemplate.comments = function() {
-  console.log(this.comments);
-  // return this.comments;
+  return this.comments;
 }
 
 Template.singlePointTemplate.allThumbsUp = function() {

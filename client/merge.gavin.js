@@ -32,7 +32,7 @@ var thisPoint = {
   },
   'addComment' : function(text){
     var point = getActivePoint();
-    var comment = {userId: Meteor.userId(), text: text};
+    var comment = {userId: Meteor.userId(), text: text, name: Meteor.user().profile.name};
     point.comments.push(comment);
     editPoint(point, {comments: point.comments})
     console.log('comment added');
