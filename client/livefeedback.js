@@ -38,6 +38,7 @@ Meteor.autosubscribe(function() {
       if(this.toString() == Meteor.userId())// Meteor.user()._id
         Session.set("myOwnStream", true);
     });
+    Session.set("tasksLoaded", true);
   }
 });
 
@@ -367,13 +368,13 @@ Template.ownerView.events = {
   'click .edit' : function(e) {
     var editButton = $(e.srcElement);
     var pointContent = editButton.parent().siblings('span.content');
-    if(pointContent.has('textarea.pointEditor').length > 0) {
+    if(pointContent.has('input.pointEditor').length > 0) {
       editButton.text('edit');
-      editPoint(this, {content: pointContent.find('textarea.pointEditor').val()}); 
+      editPoint(this, {content: pointContent.find('input.pointEditor').val()}); 
     } 
     else {
       var currentHtml = pointContent.html();
-      var input = $('<textarea type="text" class="pointEditor span2" rows="3"/>');
+      var input = $('<input type="text" class="pointEditor span3"/>');
       input.keypress(function(e){
         if(e.keyCode == 13) 
           $(this).parent().find('.edit').trigger('click');
@@ -394,6 +395,18 @@ Template.ownerView.events = {
     {_id: Session.get("currentStream")},
     {$set: 
     {'name': $('#newStreamNameInput').val()}});
+  },
+  'click #submitNewModerator' : function() {
+    if($("#addModeratorEmail").val() =='') {
+      alert('Put in a new Stream name');
+      return false
+    };
+    Meteor.call('addCollaborator', $("#addModeratorEmail").val(), Session.get("currentStream"), function(error, result) {
+      if(error)
+        alert(error.reason);
+      if(result)
+        console.log(result);
+    });
   }
 };
 Template.modalTemplate.comments = function() {
@@ -401,7 +414,8 @@ Template.modalTemplate.comments = function() {
 }
 
 Template.singlePointTemplate.allThumbsUp = function() {
-  return (this.thumbsUp.length == 0) ? '0' : '+'+this.thumbsUp.length.toString();
+  var thumbsString = (this.thumbsUp.length == 0) ? '0' : '+'+this.thumbsUp.length.toString();
+  return thumbsString;
 };
 Template.singlePointTemplate.allThumbsDown = function() {
   return (this.thumbsDown.length == 0) ? '0' : '-'+this.thumbsDown.length.toString();
@@ -411,6 +425,8 @@ Template.singlePointTemplate.AllComments = function() {
 };
 Template.singleModeratorsTemplate.owners = function() {
   return Meteor.users.findOne(this.toString()).profile.name;
+  var thumbsString = (this.thumbsDown.length == 0) ? '0' : '-'+this.thumbsDown.length.toString();  
+  return thumbsString;
 };
 
 ////////// Tracking selected stream in URL //////////
