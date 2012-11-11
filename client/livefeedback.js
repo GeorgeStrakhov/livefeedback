@@ -177,6 +177,9 @@ Template.myStreams.allStreams = function() {
   var allStreams = Streams.find({owners: {$all: [Meteor.userId()]}}).fetch(); //should match if current use is one of the owners
   return allStreams;
 };
+Template.myStreams.userName = function() {
+  if(Meteor.userLoaded()) return Meteor.user().profile.name
+};
 
 Template.myStreams.noStreamsYet = function() {
   var allStreams = Streams.find({owners: {$all: [Meteor.userId()]}}).fetch(); //should match if current use is one of the owners
@@ -231,11 +234,17 @@ Template.myStreams.events = {
       alert("please enter the name of the stream!");
     }
   },
+  'click #logoutButton': function() {
+    Meteor.logout();
+  }
 };
 
 Template.singleStreamItem.joinersCount = function() {
   return this.joiners.length;
 };
+Template.singleStreamItem.isActive = function() {
+  return this.status == "active";
+}
 Template.ownerView.rendered = function() {
   $('li.point').on({
     hover : function(){
@@ -307,7 +316,7 @@ Template.ownerView.events = {
   },
   'click #newPointBtn' : function() {
     if($("#newPointContent").val() == "") {
-      alert('hey, stfu and put in a point');
+      alert('put in a point');
       return false
     };
     createPoint({
@@ -322,7 +331,7 @@ Template.ownerView.events = {
     //   return false
     // }
     if($("#newPointContent").val() == "") {
-      alert('hey, stfu and put in a point');
+      alert('put in a point');
       return false
     };
     createPoint({
@@ -346,9 +355,6 @@ Template.ownerView.events = {
     } else if (currentStatus == 'finished' && !atLeastOnePointIsActive) {
       alert('Make a point active');
     }
-  },
-  'click #submitNewModerator': function() {
-    alert('Meteor error: all the data is now erased');
   },
   'keypress #newPointContent' : function(e) {
     if(e.keyCode == 13 ) $('#newPointBtn').trigger('click');

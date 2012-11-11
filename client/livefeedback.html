@@ -75,14 +75,17 @@
 </template>
 
 <template name="myStreams">
-  <div>
-    {{loginButtons}}
+  <div class="container">
+    <div >
+      <!-- {{userName}} -->
+      <button class="signup pull-right" id="logoutButton">Logout</button>
+    </div>
   </div>
-  <div>
+  <div class="container">
     <h1>Here are your streams:</h1>
   </div>
   <div>
-    <ul>
+    <ul class="streams">
       {{#if noStreamsYet}}
         <li>looks like you haven't created any streams yet...</li>
       {{/if}}
@@ -92,21 +95,28 @@
     </ul>
   </div>
   <div>
-    <button class="btn" id="createNewStream">create new</button>
-    <div class="hide" id="newStreamCreate">
+    <div class="btn-group">
+      <button class="btn streamNavButton btn-large" id="createNewStream">create new</button>
+      <button class="btn streamNavButton btn-large" id="joinStream">go to stream</button>
+    </div>
+    <div class="hide form-inline " id="joinStreamForm">
+      <input type="text" id="joinStreamName" placeholder="please enter a name of the stream"/>
+      <button class="btn" id="joinStreamBtn">go</button>
+    </div>
+    <div class="hide form-inline" id="newStreamCreate">
       <input type="text" id="newStreamName" placeholder="Your stream name!" />
       <button class="btn" id="createNewStreamBtn">ok</button>
-    </div>
-    <button class="btn" id="joinStream">go to stream</button>
-    <div class="hide" id="joinStreamForm">
-      <input type="text" id="joinStreamName" placeholder="please enter a name of the stream"/>
-      <button class="btn" id="joinStreamBtn">go</btn>
     </div>
   </div>
 </template>
 
 <template name="singleStreamItem">
-  <li class="thisStream{{this.status}}"><a href="#stream/{{this._id}}">{{this.name}}</a> - joiners: <a href="#" class="joinersForStream" id="joinersCountForStream{{this._id}}" rel="popover" data-placement="right" data-title="People who joined:" data-content="{{namesOfPeopleWhoJoined}}">{{joinersCount}}</a></li>
+  <li class="thisStream{{this.status}} stream">
+    <a href="#stream/{{this._id}}">{{this.name}}</a> {{#if isActive}} <span class="label label-success">active</span> {{/if}}
+    <span class="pull-right ">
+      joiners: 
+      <span class="joinersForStream badge badge-info" id="joinersCountForStream{{this._id}}" rel="popover" data-placement="left" data-title="People who joined:" data-content="{{namesOfPeopleWhoJoined}}">{{joinersCount}}</span>
+    </span></li>
 </template>
 
 <template name="singleStream">
