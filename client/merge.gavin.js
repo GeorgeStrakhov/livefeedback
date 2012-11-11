@@ -15,6 +15,16 @@ function getActivePoint(stream){
   }
 }
 
+function hasVoted(){
+    var stream = Streams.findOne(Session.get('currentStream'));
+    var point = getActivePoint(stream);
+    console.log('userId:'+Meteor.userId)
+    if ( $.inArray(userId, point.thumbsUp) > -1 || $.inArray(userId, point.thumbsDown) > -1 ){
+      return true;
+    } else {
+      return false;
+    }
+}
 var thisPoint = {
 	'get' : function(attr){
     var point = getActivePoint(getCurrentStream());
@@ -22,7 +32,7 @@ var thisPoint = {
 	},
   'hasVoted' : function(){
     var point = getActivePoint(getCurrentStream());
-    if ( $.inArray(userId, point.thumbsUp) > -1 || $.inArray(userId, point.thumbsDown) > -1 ){
+    if ( $.inArray(Meteor.userId(), point.thumbsUp) > -1 || $.inArray(Meteor.userId(), point.thumbsDown) > -1 ){
       return true;
     } else {
       return false;
@@ -67,7 +77,6 @@ Template.participantView.events = {
 function votePoint(direction) {
 	//one vote per point, even if user votes multiple times
 	var point = getActivePoint(getCurrentStream());
-  var userId = Meteor.userId();
   var addField;
   var remField;
   switch (direction){
@@ -81,11 +90,11 @@ function votePoint(direction) {
       break;
   }
   //only perform operation if 
-  if ( $.inArray(userId, point[addField]) < 0){
+  if ( $.inArray(Meteor.userId(), point[addField]) < 0){
     //add vote
-    point[addField].push(userId);
+    point[addField].push(Meteor.userId());
     //remove old vote if necessary
-    var remPos = $.inArray(userId, point[remField]);
+    var remPos = $.inArray(Meteor.userId(), point[remField]);
     if (remPos > -1){
       point[remField].splice(remPos, 1);
     }
@@ -100,6 +109,10 @@ Handlebars.registerHelper("currentPointVotes", function(direction) {
   return point['thumbs'+direction].length;
 });
 
-Template.participantView.hasVoted = function() {
+//Template.participantView.hasVoted = function() {
+//  return thisPoint.hasVoted();
+//};
+Handlebars.registerHelper("hasVoted", function() {
+  var stream = Streams.findOne(Session.get("currentStream"));
   return thisPoint.hasVoted();
-};
+});
