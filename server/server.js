@@ -88,7 +88,7 @@ Streams.allow({
     if(fields[0] == "joiners") {
       return true; //properly we also need to check that I'm not yet a joiner and I'm adding myself but later
     }
-    //console.log(JSON.stringify(modifier));
+    console.log(JSON.stringify(modifier));
     //disallow if I'm trying to change the stream(s) that I'm neither a joiner nor an owner of (unless I'm adding a new joiner that is me)
     var notAnOwner = true;
     for(var i=0; i<stream.owners.length; i++) {
@@ -110,9 +110,34 @@ Streams.allow({
     }
     //disallow if I'm trying to add more than one vote from myself to a point
     if(modifier['$set']) {
-      //console.log(modifier["$set"].points);
-      //return false
+      var points = modifier['$set'].points;
+      if(points) { //we're checking here that there is no such point in the new points array for which I have more than one vote
+        // for (var i = points.length - 1; i >= 0; i--) {
+        //   var point = points[i];
+        //   // console.log(point.thumbsUp.length, point.thumbsDown.length);
+        //   for (var x = point.thumbsUp.length - 1; x >= 0; x--) {
+        //     console.log(point.thumbsUp[x]);
+        //   };
+        // };
+
+        for (var i=0; i<points.length; i++) {
+          var point = points[i];
+          var myThumbsUpOrDown = 0;
+          for(var x=0; x<point.thumbsUp.length; x++) {
+            if(point.thumbsUp[x] == userId)
+              myThumbsUpOrDown++;
+          }
+          for(var x=0; x<point.thumbsDown.length; x++) {
+            if(point.thumbsDown[x] == userId)
+              myThumbsUpOrDown++;
+          }
+          if(myThumbsUpOrDown > 1) {
+            return false;
+          }
+        }
+      }
     }
+
     //if non of the above returned false -> we think it's ok so we return true
     return true;
   },
@@ -130,4 +155,5 @@ Meteor.publish("streams", function () { //only publish the streams to the Client
 Meteor.publish("directory", function () {
   return Meteor.users.find({}, {fields: {profile: 1}});
 });
+
 

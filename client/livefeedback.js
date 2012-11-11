@@ -38,6 +38,7 @@ Meteor.autosubscribe(function() {
       if(this.toString() == Meteor.userId())// Meteor.user()._id
         Session.set("myOwnStream", true);
     });
+    Session.set("tasksLoaded", true);
   }
 });
 
@@ -263,6 +264,47 @@ Template.singleStreamItem.namesOfPeopleWhoJoined = function() {
 };
 
 Template.ownerView.events = {
+  'click .viewFeedback' : function(e) {
+    $(e.srcElement).siblings('.modal').modal('show');
+  },
+  'click .navigatePoints' : function(e) {
+    var currentPoints = getCurrentStreamPoints();
+    var numberOfActivePoint;
+    if($(e.srcElement).data('navigate') == 'up') {
+      $.each(currentPoints, function(i){
+        if(this.isActive) numberOfActivePoint = i;
+      });
+      if(currentPoints[numberOfActivePoint-1]) {
+        makePointActive(currentPoints[numberOfActivePoint-1]);
+      } 
+      else {
+          if(Streams.findOne({_id: Session.get("currentStream")}).status == 'active') {
+            makeAllPointsInActive();
+            Streams.update({_id: Session.get("currentStream")},{$set: {status: 'finished'}});
+          } 
+          else {
+            return false;
+          }     
+      }
+    } 
+    else if ($(e.srcElement).data('navigate') == "down") {
+      $.each(currentPoints, function(i){
+        if(this.isActive) numberOfActivePoint = i;
+      });
+      if(currentPoints[numberOfActivePoint+1]) {
+        makePointActive(currentPoints[numberOfActivePoint+1]);
+      } 
+      else {
+          if(Streams.findOne({_id: Session.get("currentStream")}).status == 'active') {
+            makeAllPointsInActive();
+            Streams.update({_id: Session.get("currentStream")},{$set: {status: 'finished'}});
+          } 
+          else {
+            return false;
+          }     
+      }
+    } 
+  },
   'click #newPointBtn' : function() {
     if($("#newPointContent").val() == "") {
       alert('hey, stfu and put in a point');
@@ -317,13 +359,13 @@ Template.ownerView.events = {
   'click .edit' : function(e) {
     var editButton = $(e.srcElement);
     var pointContent = editButton.parent().siblings('span.content');
-    if(pointContent.has('textarea.pointEditor').length > 0) {
+    if(pointContent.has('input.pointEditor').length > 0) {
       editButton.text('edit');
-      editPoint(this, {content: pointContent.find('textarea.pointEditor').val()}); 
+      editPoint(this, {content: pointContent.find('input.pointEditor').val()}); 
     } 
     else {
       var currentHtml = pointContent.html();
-      var input = $('<textarea type="text" class="pointEditor span2" rows="3"/>');
+      var input = $('<input type="text" class="pointEditor span3"/>');
       input.keypress(function(e){
         if(e.keyCode == 13) 
           $(this).parent().find('.edit').trigger('click');
@@ -347,12 +389,12 @@ Template.ownerView.events = {
   }
 };
 Template.modalTemplate.comments = function() {
-  console.log(this.comments);
-  // return this.comments;
+  return this.comments;
 }
 
 Template.singlePointTemplate.allThumbsUp = function() {
-  return (this.thumbsUp.length == 0) ? '0' : '+'+this.thumbsUp.length.toString();
+  var thumbsString = (this.thumbsUp.length == 0) ? '0' : '+'+this.thumbsUp.length.toString();
+  return thumbsString;
 };
 Template.singlePointTemplate.allThumbsDown = function() {
   return (this.thumbsDown.length == 0) ? '0' : '-'+this.thumbsDown.length.toString();
@@ -362,6 +404,8 @@ Template.singlePointTemplate.AllComments = function() {
 };
 Template.singleModeratorsTemplate.owners = function() {
   return Meteor.users.findOne(this.toString()).profile.name;
+  var thumbsString = (this.thumbsDown.length == 0) ? '0' : '-'+this.thumbsDown.length.toString();  
+  return thumbsString;
 };
 
 ////////// Tracking selected stream in URL //////////
