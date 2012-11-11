@@ -31,6 +31,7 @@ Meteor.autosubscribe(function() {
   var currentStream = Streams.findOne(Session.get("currentStream"));
   Session.set("myOwnStream", false);
   if(currentStream) {
+    addJoiner();
     $.each(currentStream.owners, function() {
       if(this.toString() == Meteor.userId())// Meteor.user()._id
         Session.set("myOwnStream", true);
@@ -49,6 +50,10 @@ function createStream(details) {
   });
 };
 
+function uniqueStreamName(newName) {
+  return Streams.findOne({name: newName});
+};
+
 function createPoint(details) {
   if (typeof details.isActive != 'undefined') {
     makeAllPointsInActive();
@@ -65,10 +70,25 @@ function createPoint(details) {
 };
 
 function addJoiner() {
-  if(Session.get("currentStream")) {
-    Streams.update({_id: Session.get("currentStream")},{$addToSet: {joiners: Meteor.userId()}});
-  } else {
-    alert("error! no current stream!");
+  if(Meteor.userLoaded()) {
+    if(Session.get("currentStream")) {
+      var notAJoiner = true;
+      var notAnOwner = true;
+      var currentStream = Streams.findOne(Session.get("currentStream"));
+      $.each(currentStream.owners, function() {
+        if(this.toString() == Meteor.userId())
+          notAnOwner = false;
+      });
+      $.each(currentStream.joiners, function() {
+        if(this.toString() == Meteor.userId())
+          notAJoiner = false;
+      });
+      if(notAJoiner && notAnOwner) {
+        Streams.update({_id: Session.get("currentStream")},{$addToSet: {joiners: Meteor.userId()}});
+      }
+    } else {
+      alert("error! no current stream!");
+    }
   }
 };
 
@@ -140,6 +160,15 @@ Template.myStreams.allStreams = function() {
   return allStreams;
 };
 
+Template.myStreams.noStreamsYet = function() {
+  var allStreams = Streams.find({owners: {$all: [Meteor.userId()]}}).fetch(); //should match if current use is one of the owners
+  return allStreams.length == 0;
+};
+
+Template.myStreams.rendered = function() {
+  $(".joinersForStream").popover();
+};
+
 Template.myStreams.events = {
   'click #createNewStream' : function() {
     $("#newStreamCreate").toggle();
@@ -147,11 +176,15 @@ Template.myStreams.events = {
   },
   'click #createNewStreamBtn' : function() {
     if($("#newStreamName").val()!="") {
-      createStream({
-        name: $("#newStreamName").val(),
-        owners: [Meteor.userId()],
-      });
-      $("#newStreamCreate").toggle();
+      if (!uniqueStreamName($("#newStreamName").val())) {
+        createStream({
+          name: $("#newStreamName").val(),
+          owners: [Meteor.userId()],
+        });
+        $("#newStreamCreate").toggle();
+      } else {
+        alert("a stream with such name already exists! please chose a different one");
+      }
     } else {
       alert("please put in a name");
     }
@@ -160,6 +193,12 @@ Template.myStreams.events = {
     $("#joinStreamForm").toggle();
     $("#joinStreamName").focus();    
   },
+  'mouseover .joinersForStream' : function() {
+    $("#joinersCountForStream"+this._id).popover("show");
+  },
+  'mouseout .joinersForStream' : function() {
+    $(".joinersForStream").popover("hide");
+  },
   'click #joinStreamBtn' : function() {
     if($("#joinStreamName").val() != "") {
       var streamIAmJoining = Streams.findOne({name: $("#joinStreamName").val()});
@@ -167,7 +206,6 @@ Template.myStreams.events = {
       if (streamIAmJoining && streamIAmJoining._id) {
         //console.log(streamIAmJoining._id);
         Router.navigate("stream/"+streamIAmJoining._id, true);
-        addJoiner();
       } else {
         alert("sorry, there is no stream with such name"); 
       }
@@ -189,6 +227,20 @@ Template.ownerView.rendered = function() {
     //   $(this).find('.edit').trigger('click');
     // }
   });
+};
+
+Template.singleStreamItem.namesOfPeopleWhoJoined = function() {
+  var names = "";
+  $.each(this.joiners, function() {
+  //console.log(this.toString());
+    if(names != "")
+      names +=", ";
+    var nextName = Meteor.users.findOne(this.toString()).profile.name;
+    names += nextName;
+  });
+  if (names == "")
+    names = "nobody joined yet..."
+  return names;
 };
 
 Template.ownerView.events = {

@@ -18,7 +18,7 @@ Event participants can scan a code or enter a url (once!) and then provide their
 
 technology
 ==========
-meteor
+meteor + 
 bootstrap
 
 data structure
