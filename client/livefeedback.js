@@ -273,13 +273,13 @@ Template.ownerView.events = {
   'click .edit' : function(e) {
     var editButton = $(e.srcElement);
     var pointContent = editButton.parent().siblings('span.content');
-    if(pointContent.has('input.pointEditor').length > 0) {
+    if(pointContent.has('textarea.pointEditor').length > 0) {
       editButton.text('edit');
-      editPoint(this, {content: pointContent.find('input.pointEditor').val()}); 
+      editPoint(this, {content: pointContent.find('textarea.pointEditor').val()}); 
     } 
     else {
       var currentHtml = pointContent.html();
-      var input = $('<input type="text" class="pointEditor span3"/>');
+      var input = $('<textarea type="text" class="pointEditor span2" rows="3"/>');
       input.keypress(function(e){
         if(e.keyCode == 13) 
           $(this).parent().find('.edit').trigger('click');
@@ -294,14 +294,17 @@ Template.ownerView.events = {
 };
 
 Template.singlePointTemplate.allThumbsUp = function() {
-  var thumbsString = (this.thumbsUp.length == 0) ? '0' : '+'+this.thumbsUp.length.toString();
-  return thumbsString;
+  return (this.thumbsUp.length == 0) ? '0' : '+'+this.thumbsUp.length.toString();
 };
 Template.singlePointTemplate.allThumbsDown = function() {
-  var thumbsString = (this.thumbsDown.length == 0) ? '0' : '-'+this.thumbsDown.length.toString();  
-  return thumbsString;
+  return (this.thumbsDown.length == 0) ? '0' : '-'+this.thumbsDown.length.toString();
 };
-
+Template.singlePointTemplate.AllComments = function() {
+  return (this.comments.length.toString() == '1') ? (this.comments.length.toString() + ' feedback') : (this.comments.length.toString() + ' feedbacks');
+};
+Template.singleModeratorsTemplate.owners = function() {
+  return Meteor.users.findOne(this.toString()).profile.name;
+};
 ////////// Tracking selected stream in URL //////////
 
 var StreamsRouter = Backbone.Router.extend({
