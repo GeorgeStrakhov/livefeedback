@@ -160,6 +160,10 @@ Template.myStreams.noStreamsYet = function() {
   return allStreams.length == 0;
 };
 
+Template.myStreams.rendered = function() {
+  $(".joinersForStream").popover();
+};
+
 Template.myStreams.events = {
   'click #createNewStream' : function() {
     $("#newStreamCreate").toggle();
@@ -184,6 +188,12 @@ Template.myStreams.events = {
     $("#joinStreamForm").toggle();
     $("#joinStreamName").focus();    
   },
+  'mouseover .joinersForStream' : function() {
+    $("#joinersCountForStream"+this._id).popover("show");
+  },
+  'mouseout .joinersForStream' : function() {
+    $(".joinersForStream").popover("hide");
+  },
   'click #joinStreamBtn' : function() {
     if($("#joinStreamName").val() != "") {
       var streamIAmJoining = Streams.findOne({name: $("#joinStreamName").val()});
@@ -202,6 +212,20 @@ Template.myStreams.events = {
 
 Template.singleStreamItem.joinersCount = function() {
   return this.joiners.length;
+};
+
+Template.singleStreamItem.namesOfPeopleWhoJoined = function() {
+  var names = "";
+  $.each(this.joiners, function() {
+  //console.log(this.toString());
+    if(names != "")
+      names +=", ";
+    var nextName = Meteor.users.findOne(this.toString()).profile.name;
+    names += nextName;
+  });
+  if (names == "")
+    names = "nobody joined yet..."
+  return names;
 };
 
 Template.ownerView.events = {

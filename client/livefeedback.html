@@ -55,7 +55,7 @@
 </template>
 
 <template name="singleStreamItem">
-  <li class="thisStream{{this.status}}"><a href="#stream/{{this._id}}">{{this.name}}</a> - joiners: {{joinersCount}}</li>
+  <li class="thisStream{{this.status}}"><a href="#stream/{{this._id}}">{{this.name}}</a> - joiners: <a href="#" class="joinersForStream" id="joinersCountForStream{{this._id}}" rel="popover" data-placement="right" data-title="People who joined:" data-content="{{namesOfPeopleWhoJoined}}">{{joinersCount}}</a></li>
 </template>
 
 <template name="singleStream">
