@@ -120,22 +120,26 @@
     {{> finishedStreamView}}
   {{/if}}
   {{#if currentStreamStatus "active"}}
-    {{#if hasVoted "true"}}
-      <div>
+    {{#if activePoint "true"}}
+      {{#if hasVoted "true"}}
+        <div>
+          <div style="text-align: center">{{{activePoint.content}}}</div>
+          <div><strong>results:</strong></div>
+          <div>Thumbs Up: {{currentPointVotes "Up"}}</div>
+          <div>Thumbs Down: {{currentPointVotes "Down"}} </div>
+        </div>
+        <div id="pointFeedback">
+          <br/>
+          <input type="text" id="pointFeedbackText" placeholder="Type feedback here" />
+          <button class="btn" id="pointFeedbackButton">Submit</button>
+        </div>
+      {{else}}
+        <button id="voteUp" class=" btn-large btn-block btn-primary" type="button">Vote Up</button>
         <div style="text-align: center">{{{activePoint.content}}}</div>
-        <div><strong>results:</strong></div>
-        <div>Thumbs Up: {{currentPointVotes "Up"}}</div>
-        <div>Thumbs Down: {{currentPointVotes "Down"}} </div>
-      </div>
-      <div id="pointFeedback">
-        <br/>
-        <input type="text" id="pointFeedbackText" placeholder="Type feedback here" />
-        <button class="btn" id="pointFeedbackButton">Submit</button>
-      </div>
+        <button id="voteDown" class="btn btn-large btn-block btn-danger" type="button">Vote Down</button>
+      {{/if}}
     {{else}}
-      <button id="voteUp" class=" btn-large btn-block btn-primary" type="button">Vote Up</button>
-      <div style="text-align: center">{{{activePoint.content}}}</div>
-      <button id="voteDown" class="btn btn-large btn-block btn-danger" type="button">Vote Down</button>
+      <div>no active point</div>
     {{/if}}
   {{/if}}
 </template>
