@@ -1,4 +1,6 @@
 Streams = new Meteor.Collection("streams");
+Meteor.subscribe("streams");
+Meteor.subscribe("userDirectory");
 
 ////////// global reactive helpers ///////////
 Handlebars.registerHelper("urlPart", function() {
@@ -242,17 +244,22 @@ Template.ownerView.rendered = function() {
 };
 
 Template.singleStreamItem.namesOfPeopleWhoJoined = function() {
-  var names = "";
-  $.each(this.joiners, function() {
-  //console.log(this.toString());
-    if(names != "")
-      names +=", ";
-    var nextName = Meteor.users.findOne(this.toString()).profile.name;
-    names += nextName;
-  });
-  if (names == "")
-    names = "nobody joined yet..."
-  return names;
+  if(Meteor.userLoaded()) {
+    var names = "";
+    $.each(this.joiners, function() {
+    //console.log(this.toString());
+      if(names != "")
+        names +=", ";
+      //console.log(Meteor.users.findOne());
+      if(Meteor.users.findOne(this.toString())) {
+        var nextName = Meteor.users.findOne(this.toString()).profile.name;
+        names += nextName;
+      }
+    });
+    if (names == "")
+      names = "nobody joined yet..."
+    return names;
+  }
 };
 
 Template.ownerView.events = {
@@ -354,7 +361,7 @@ Template.singlePointTemplate.AllComments = function() {
   return (this.comments.length.toString() == '1') ? (this.comments.length.toString() + ' feedback') : (this.comments.length.toString() + ' feedbacks');
 };
 Template.singleModeratorsTemplate.owners = function() {
-  return Meteor.users.findOne(this.toString()).profile.name;
+  //FIXX!!return Meteor.users.findOne(this.toString()).profile.name;
 };
 
 ////////// Tracking selected stream in URL //////////
