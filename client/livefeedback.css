@@ -48,3 +48,36 @@ li.point img {
 	text-align: center;
 	padding: 5px;
 }
+
+/* Participant View */
+.box-point-content{
+	max-height: 300px;
+	min-height: 100px;
+}
+
+.box-point-content img{
+	max-height: 200px;
+}
+
+.participant-view .container-results, .participant-view .container-feedback {
+	background-color: #fff;
+	border: 1px solid #CCC;
+	border-radius: 5px;
+	padding: 8px;
+}
+.participant-view .container-feedback{
+	background-color: #dddddd;
+}
+
+.box-vote {
+	padding: 3px;
+	border-radius: 10px;
+	text-align: center;
+}
+.box-vote h1{
+	color: white;
+}
+.center {
+	text-align: center;
+	margin: 0 auto;
+}

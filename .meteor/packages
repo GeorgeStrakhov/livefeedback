@@ -11,3 +11,5 @@ bootstrap
 backbone
 less
 accounts-ui-unstyled
+insecure
+autopublish
