@@ -51,8 +51,7 @@ li.point img {
 
 /* Participant View */
 .box-point-content{
-	max-height: 300px;
-	min-height: 100px;
+
 }
 
 .box-point-content img{
@@ -89,4 +88,20 @@ li.point img {
 }
 .btn-vote-down {
 	border-color: red;
+}
+div#spinner
+{
+    width:100px;
+    height: 100px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    background:url(/img/loader.gif) no-repeat center #fff;
+    text-align:center;
+    padding:10px;
+    margin-left: -50px;
+    margin-top: -50px;
+    z-index:2;
+    overflow: auto;
+    border-radius: 10px;
 }
