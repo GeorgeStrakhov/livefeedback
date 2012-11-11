@@ -9,7 +9,7 @@ preserve-inputs
 jquery
 accounts-base
 accounts-facebook
-accounts-ui
 bootstrap
 backbone
 less
+accounts-ui-unstyled

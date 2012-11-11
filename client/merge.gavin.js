@@ -9,27 +9,29 @@ function setStreamOwner(ownerId){
 	return getCurrentStream();
 }
 
-function getActivePoint(stream){
-  for (i=0; i<stream.points.length; i++) {
-    if (stream.points[i].isActive) return stream.points[i];
+function getActivePoint(){
+  var points = getCurrentStreamPoints();
+  for (i=0; i<points.length; i++) {
+    if (points[i].isActive) return points[i];
   }
 }
 
 var thisPoint = {
 	'get' : function(attr){
-    var point = getActivePoint(getCurrentStream());
+    var point = getActivePoint();
 	  return point[attr];
 	},
   'hasVoted' : function(){
-    var point = getActivePoint(getCurrentStream());
-    if ( $.inArray(userId, point.thumbsUp) > -1 || $.inArray(userId, point.thumbsDown) > -1 ){
+    var point = getActivePoint();
+    if (typeof point === 'undefined') return;
+    if ( $.inArray(Meteor.userId(), point.thumbsUp) > -1 || $.inArray(Meteor.userId(), point.thumbsDown) > -1 ){
       return true;
     } else {
       return false;
     }
   },
   'addComment' : function(text){
-    var point = getActivePoint(getCurrentStream());
+    var point = getActivePoint();
     var comment = {userId: Meteor.userId(), text: text};
     point.comments.push(comment);
     editPoint(point, {comments: point.comments})
@@ -66,8 +68,7 @@ Template.participantView.events = {
 
 function votePoint(direction) {
 	//one vote per point, even if user votes multiple times
-	var point = getActivePoint(getCurrentStream());
-  var userId = Meteor.userId();
+	var point = getActivePoint();
   var addField;
   var remField;
   switch (direction){
@@ -81,11 +82,11 @@ function votePoint(direction) {
       break;
   }
   //only perform operation if 
-  if ( $.inArray(userId, point[addField]) < 0){
+  if ( $.inArray(Meteor.userId(), point[addField]) < 0){
     //add vote
-    point[addField].push(userId);
+    point[addField].push(Meteor.userId());
     //remove old vote if necessary
-    var remPos = $.inArray(userId, point[remField]);
+    var remPos = $.inArray(Meteor.userId(), point[remField]);
     if (remPos > -1){
       point[remField].splice(remPos, 1);
     }
@@ -96,10 +97,10 @@ function votePoint(direction) {
 }
 
 Handlebars.registerHelper("currentPointVotes", function(direction) {
-  var point = getActivePoint(getCurrentStream());
+  var point = getActivePoint();
   return point['thumbs'+direction].length;
 });
 
-Template.participantView.hasVoted = function() {
+Handlebars.registerHelper("hasVoted", function() {
   return thisPoint.hasVoted();
-};
+});
