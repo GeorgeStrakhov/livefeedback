@@ -109,10 +109,10 @@ Handlebars.registerHelper("currentPointVotes", function(direction) {
   return point['thumbs'+direction].length;
 });
 
-//Template.participantView.hasVoted = function() {
-//  return thisPoint.hasVoted();
-//};
-Handlebars.registerHelper("hasVoted", function() {
-  var stream = Streams.findOne(Session.get("currentStream"));
+Template.participantView.hasVoted = function() {
   return thisPoint.hasVoted();
-});
+};
+//Handlebars.registerHelper("hasVoted", function() {
+//  var stream = Streams.findOne(Session.get("currentStream"));
+//  return thisPoint.hasVoted();
+//});
