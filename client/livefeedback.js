@@ -395,18 +395,15 @@ Template.singlePointTemplate.allThumbsUp = function() {
   return thumbsString;
 };
 Template.singlePointTemplate.allThumbsDown = function() {
-<<<<<<< HEAD
   return (this.thumbsDown.length == 0) ? '0' : '-'+this.thumbsDown.length.toString();
 };
 Template.singlePointTemplate.AllComments = function() {
   return (this.comments.length.toString() == '1') ? (this.comments.length.toString() + ' feedback') : (this.comments.length.toString() + ' feedbacks');
 };
 Template.singleModeratorsTemplate.owners = function() {
-  //FIXX!!return Meteor.users.findOne(this.toString()).profile.name;
-=======
+  return Meteor.users.findOne(this.toString()).profile.name;
   var thumbsString = (this.thumbsDown.length == 0) ? '0' : '-'+this.thumbsDown.length.toString();  
   return thumbsString;
->>>>>>> parent of d2fca0a... feedback counter, moderators
 };
 
 ////////// Tracking selected stream in URL //////////

@@ -133,7 +133,6 @@
 
 <template name="ownerView">
   <div class="container">
-<<<<<<< HEAD
     <div class="row">
       <div class="span6">
         <h3>Stream points - <strong>{{currentStream.name}}</strong> </h3>
@@ -192,33 +191,10 @@
 
       </div>
     </div>
-=======
-    <h3>Stream points</h3>
-    <ul class="points span4 clearfix">
-      {{#each currentStream.points}}
-        <li class="{{#if this.isActive}}active {{/if}}point">
-          {{> singlePointTemplate}}
-          <div class="btn-group pull-right">
-            <button class="edit btn btn-mini">edit</button>
-            <button class="delete btn btn-danger btn-mini">delete</button>
-            <button class="makeActive btn btn-success btn-mini">activate</button>
-          </div>
-        </li>
-      {{/each}}
-      <li>
-        <textarea type="text" id="newPointContent" placeholder="type any HTML and be happy" class="span4 inputNewPoint"/>
-        <div class="btn-group">
-          <button class="btn span2" id="newPointBtn">add</button>
-          <button class="btn span2" id="newPointBtnAndActivate">add and make active</button>          
-        </div>
-      </li>
-    </ul>
->>>>>>> parent of d2fca0a... feedback counter, moderators
   </div>
 </template>
 
 <template name="singlePointTemplate">
-<<<<<<< HEAD
   {{> modalTemplate}}
   <button class="btn btn-primary btn-mini viewFeedback">{{AllComments}}</button>
   <span class="badge badge-success">{{allThumbsUp}}</span>
@@ -250,11 +226,6 @@
 
 <template name="singleModeratorsTemplate">
     {{owners}}
-=======
-  <span class="label label-success">{{allThumbsUp}}</span>
-  <span class="label label-important">{{allThumbsDown}}</span>
-  <span class="content">{{{this.content}}}</span>
->>>>>>> parent of d2fca0a... feedback counter, moderators
 </template>
 
 <template name="participantView">
