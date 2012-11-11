@@ -38,6 +38,7 @@ Meteor.autosubscribe(function() {
       if(this.toString() == Meteor.userId())// Meteor.user()._id
         Session.set("myOwnStream", true);
     });
+    Session.set("tasksLoaded", true);
   }
 });
 

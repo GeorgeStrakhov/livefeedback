@@ -21,11 +21,13 @@ var thisPoint = {
     var point = getActivePoint();
 	  return point[attr];
 	},
-  'hasVoted' : function(){
+  'voted' : function(){
     var point = getActivePoint();
     if (typeof point === 'undefined') return;
-    if ( $.inArray(Meteor.userId(), point.thumbsUp) > -1 || $.inArray(Meteor.userId(), point.thumbsDown) > -1 ){
-      return true;
+    if ( $.inArray(Meteor.userId(), point.thumbsUp) > -1 ){
+      return 'up';
+    } else if ( $.inArray(Meteor.userId(), point.thumbsDown) > -1 ){
+      return 'down';
     } else {
       return false;
     }
@@ -34,7 +36,8 @@ var thisPoint = {
     var point = getActivePoint();
     var comment = {userId: Meteor.userId(), text: text};
     point.comments.push(comment);
-    editPoint(point, {comments: point.comments})
+    editPoint(point, {comments: point.comments});
+    alert('Thanks for the comment!');
     console.log('comment added');
   }
 };
@@ -101,6 +104,10 @@ Handlebars.registerHelper("currentPointVotes", function(direction) {
   return point['thumbs'+direction].length;
 });
 
-Handlebars.registerHelper("hasVoted", function() {
-  return thisPoint.hasVoted();
+Handlebars.registerHelper("voted", function() {
+  return thisPoint.voted();
+});
+
+Handlebars.registerHelper("tasksLoaded", function() {
+  return Session.get('tasksLoaded');
 });

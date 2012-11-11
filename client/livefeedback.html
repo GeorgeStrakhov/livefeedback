@@ -19,6 +19,10 @@
   </div>
 </body>
 
+<template name="loading">
+  <img src="loader.gif"/>
+</template>
+
 <template name="app">
   {{#if urlPart}} <!-- if there the url is something glike http://livefeedback.mobi/streams/id-->
     {{> singleStream}}
@@ -102,19 +106,19 @@
 </template>
 
 <template name="singleStream">
-  {{#if currentStream._id}} <!-- if such a stream exists -->
-    {{#if currentUser}}
-      {{#if myOwnStream}}
-        {{> ownerView}}
+    {{#if currentStream._id}} <!-- if such a stream exists -->
+      {{#if currentUser}}
+        {{#if myOwnStream}}
+          {{> ownerView}}
+        {{else}}
+          {{> participantView}}
+        {{/if}}
       {{else}}
-        {{> participantView}}
+        {{> signIn}}
       {{/if}}
     {{else}}
-      {{> signIn}}
+        {{> page404}}
     {{/if}}
-  {{else}}
-    {{> page404}}
-  {{/if}}
 </template>
 
 <template name="page404">
@@ -254,31 +258,45 @@
 </template>
 
 <template name="participantView">
-  {{#if currentStreamStatus "finished"}}
-    {{> finishedStreamView}}
-  {{/if}}
   {{#if currentStreamStatus "active"}}
     {{#if activePoint "true"}}
-      {{#if hasVoted "true"}}
-        <div>
-          <div style="text-align: center">{{{activePoint.content}}}</div>
-          <div><strong>results:</strong></div>
-          <div>Thumbs Up: {{currentPointVotes "Up"}}</div>
-          <div>Thumbs Down: {{currentPointVotes "Down"}} </div>
-        </div>
-        <div id="pointFeedback">
-          <br/>
-          <input type="text" id="pointFeedbackText" placeholder="Type feedback here" />
-          <button class="btn" id="pointFeedbackButton">Submit</button>
+      {{#if voted}}
+        <div class="participant-view">
+          Current Stream: <strong>{{currentStream.name}}</strong>
+          <div class="container-results">
+
+            <div class="row-fluid">
+              <div class="box-point-content" style="text-align: center">{{{activePoint.content}}}</div>
+              <br/>
+              <div class="box-vote span3 offset3 btn-success"><h1>+{{currentPointVotes "Up"}}</h1></div>
+              <div class="box-vote span3 btn-danger"><h1>-{{currentPointVotes "Down"}}</h1></div>
+            </div>
+            <div class="row-fluid">
+              <div class="span12 center">
+                <h4><strong>
+                  You voted <span class="btn {{#if voted "up"}}btn-success{{else}}btn-danger{{/if}}">{{voted}}!</span>
+                </strong></h4>
+              </div>
+            </div>
+          </div>
+          <div id="pointFeedback" class="container-feedback">
+             <div class="input-append center">
+              <input class="" type="text" id="pointFeedbackText" size="auto" placeholder="Leave some feedback!" />
+              <button class="btn"  type="button" id="pointFeedbackButton">Submit</button>
+            </div>
+          </div>
         </div>
       {{else}}
         <button id="voteUp" class=" btn-large btn-block btn-primary" type="button">Vote Up</button>
-        <div style="text-align: center">{{{activePoint.content}}}</div>
+        <div class="box-point-content" style="text-align: center">{{{activePoint.content}}}</div>
         <button id="voteDown" class="btn btn-large btn-block btn-danger" type="button">Vote Down</button>
       {{/if}}
     {{else}}
       <div>no active point</div>
     {{/if}}
+  {{/if}}
+  {{#if currentStreamStatus "finished"}}
+    {{> finishedStreamView}}
   {{/if}}
 </template>
 
@@ -288,5 +306,10 @@
 </template>
 
 <template name="finishedStreamView">
-  finished stream ciew under coonstruction...
+  The stream: <strong>{{currentStream.name}}</strong> has ended, thank you for participating.
+  <p></p>
+  <p>For information and updates please sign up for our zero-spam mailing list:
+  <textarea type="text" id="newsletterEmail" placeholder="type any HTML and be happy" class=""/>
+  <button class="btn" id="submitNewsletter">Submit</button>
+  </p>
 </template>
