@@ -65,11 +65,11 @@ li.point img {
 }
 
 /* Participant View */
-.box-point-content{
-
+.box-point-content {
+	
 }
 
-.box-point-content img{
+.box-point-content img, .box-point-voted-content img{
 	max-height: 200px;
 }
 
