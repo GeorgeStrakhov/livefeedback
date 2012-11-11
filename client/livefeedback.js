@@ -386,6 +386,18 @@ Template.ownerView.events = {
     {_id: Session.get("currentStream")},
     {$set: 
     {'name': $('#newStreamNameInput').val()}});
+  },
+  'click #submitNewModerator' : function() {
+    if($("#addModeratorEmail").val() =='') {
+      alert('Put in a new Stream name');
+      return false
+    };
+    Meteor.call('addCollaborator', $("#addModeratorEmail").val(), Session.get("currentStream"), function(error, result) {
+      if(error)
+        alert(error.reason);
+      if(result)
+        console.log(result);
+    });
   }
 };
 Template.modalTemplate.comments = function() {
