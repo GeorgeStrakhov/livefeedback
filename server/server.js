@@ -29,7 +29,7 @@ Streams.allow({
     if(fields[0] == "joiners") {
       return true; //properly we also need to check that I'm not yet a joiner and I'm adding myself but later
     }
-    console.log(JSON.stringify(modifier));
+    //console.log(JSON.stringify(modifier));
     //disallow if I'm trying to change the stream(s) that I'm neither a joiner nor an owner of (unless I'm adding a new joiner that is me)
     var notAnOwner = true;
     for(var i=0; i<stream.owners.length; i++) {
