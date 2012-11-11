@@ -1,3 +1,5 @@
+//////////////startup stuff////////////////
+
 Meteor.startup(function() {
   if(!Accounts.loginServiceConfiguration.findOne()) { //if we just restarted the app and facebook login is not configured
     if(Meteor.absoluteUrl() == "http://localhost:3000/") {
@@ -18,6 +20,53 @@ Meteor.startup(function() {
 });
 
 Streams = new Meteor.Collection("streams");
+
+////////////methods//////////////////
+
+Meteor.methods({
+  'test': function(bb) {
+    //console.log(bb);
+    return "something interesting "+bb;
+    //throw new Meteor.Error(404, bb+"Can't find my pants");
+  },
+  'addCollaborator' : function(email, streamId) {
+    var userId = this.userId; //user invoking this
+    if(! email) {
+      throw new Meteor.Error(404, "No email received!");
+      return;
+    }
+    if(! streamId) {
+      throw new Meteor.Error(404, "No current StreamId provided");
+      return;
+    }
+    var newCollaborator = Meteor.users.findOne({"services.facebook.email": email});
+     //find a user with such an email
+    //console.log(newCollaborator);
+    if(newCollaborator) { //there is a user with such an email
+      //first add this user to the list of owners of the current stream
+      var stream = Streams.findOne(streamId);
+      if(stream) {
+        //console.log(stream);
+        Streams.update(streamId, {$addToSet: {owners: newCollaborator._id}});      
+      //second send an email
+        Email.send({
+          from : "From:noreply@livefeedback.mobi",
+          to : "To:"+email,
+          subject: Meteor.users.findOne(userId).profile.name+" invited you to be a moderator for his livestream",
+          text: "Please go to "+Meteor.absoluteUrl()+" and login if you are willing to help"
+        });
+        return "added successfully";
+      } else {
+        throw new Meteor.Error(404, "no such stream in the db");
+      }
+
+    } else {
+      throw new Meteor.Error(404, "Such user is not in the system yet.");
+    }
+  }
+});
+
+////////////allow logic/////////////
 
 Streams.allow({
   insert: function (userId, doc) {
@@ -50,7 +99,6 @@ Streams.allow({
         return false;
     }
     //disallow if I'm trying to add more than one vote from myself to a point
-    var alreadyVoted = false;
     if(modifier['$set']) {
       var points = modifier['$set'].points;
       if(points) { //we're checking here that there is no such point in the new points array for which I have more than one vote
@@ -79,9 +127,7 @@ Streams.allow({
         }
       }
     }
-    if(alreadyVoted) {
-      return false;
-    }
+
     //if non of the above returned false -> we think it's ok so we return true
     return true;
   },
@@ -90,10 +136,13 @@ Streams.allow({
   }
 });
 
+/////////publish stuff///////////
+
 Meteor.publish("streams", function () { //only publish the streams to the Client of which he/she is an owner or a joiner of
-  return Streams.find();
+  return Streams.find({});
 });
 
-Meteor.publish("userDirectory", function () {
+Meteor.publish("directory", function () {
   return Meteor.users.find({}, {fields: {profile: 1}});
 });
+

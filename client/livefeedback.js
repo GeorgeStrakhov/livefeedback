@@ -1,6 +1,6 @@
 Streams = new Meteor.Collection("streams");
 Meteor.subscribe("streams");
-Meteor.subscribe("userDirectory");
+Meteor.subscribe("directory");
 
 ////////// global reactive helpers ///////////
 Handlebars.registerHelper("urlPart", function() {
