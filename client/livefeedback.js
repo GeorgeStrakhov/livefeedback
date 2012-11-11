@@ -361,7 +361,7 @@ Template.singlePointTemplate.AllComments = function() {
   return (this.comments.length.toString() == '1') ? (this.comments.length.toString() + ' feedback') : (this.comments.length.toString() + ' feedbacks');
 };
 Template.singleModeratorsTemplate.owners = function() {
-  return Meteor.users.findOne(this.toString()).profile.name;
+  //FIXX!!return Meteor.users.findOne(this.toString()).profile.name;
 };
 
 ////////// Tracking selected stream in URL //////////
