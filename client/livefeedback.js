@@ -263,6 +263,44 @@ Template.singleStreamItem.namesOfPeopleWhoJoined = function() {
 };
 
 Template.ownerView.events = {
+  'click .navigatePoints' : function(e) {
+    var currentPoints = getCurrentStreamPoints();
+    var numberOfActivePoint;
+    if($(e.srcElement).data('navigate') == 'up') {
+      $.each(currentPoints, function(i){
+        if(this.isActive) numberOfActivePoint = i;
+      });
+      if(currentPoints[numberOfActivePoint-1]) {
+        makePointActive(currentPoints[numberOfActivePoint-1]);
+      } 
+      else {
+          if(Streams.findOne({_id: Session.get("currentStream")}).status == 'active') {
+            makeAllPointsInActive();
+            Streams.update({_id: Session.get("currentStream")},{$set: {status: 'finished'}});
+          } 
+          else {
+            return false;
+          }     
+      }
+    } 
+    else if ($(e.srcElement).data('navigate') == "down") {
+      $.each(currentPoints, function(i){
+        if(this.isActive) numberOfActivePoint = i;
+      });
+      if(currentPoints[numberOfActivePoint+1]) {
+        makePointActive(currentPoints[numberOfActivePoint+1]);
+      } 
+      else {
+          if(Streams.findOne({_id: Session.get("currentStream")}).status == 'active') {
+            makeAllPointsInActive();
+            Streams.update({_id: Session.get("currentStream")},{$set: {status: 'finished'}});
+          } 
+          else {
+            return false;
+          }     
+      }
+    } 
+  },
   'click #newPointBtn' : function() {
     if($("#newPointContent").val() == "") {
       alert('hey, stfu and put in a point');

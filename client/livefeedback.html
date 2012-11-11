@@ -134,10 +134,14 @@
         <h3>Stream points - <strong>{{currentStream.name}}</strong> </h3>
         <ul class="points">
           <li class="navItems"><a href="/">go back to my streams</a></li>
-          <li class="navItems">Current stream <strong>({{currentStream.name}})</strong> is {{currentStream.status}} 
+          <li class="navItems">Current stream <strong>({{currentStream.name}})</strong> is 
           {{#if currentStreamStatus "active"}}
+          <span class="label label-success">ACTIVE</span> 
                 and has <strong>{{currentStream.joiners.length}}</strong> followers
-              {{/if}}</li>
+          {{else}}
+          <span class="label label-important">INACTIVE</span> 
+          {{/if}}
+          </li>
           {{#each currentStream.points}}
             <li class="{{#if this.isActive}}active {{/if}}point">
               {{> singlePointTemplate}}
@@ -147,7 +151,11 @@
             <textarea rows='3' type="text" id="newPointContent" placeholder="type any HTML and be happy" class="inputNewPoint"/>
             <button class="btn btn-block btn-large" id="newPointBtn">Add a new point</button>
             <button class="btn btn-block btn-success btn-large" id="newPointBtnAndActivate">Add a new point and make it active</button>
-                    <button class="btn btn-large btn-danger btn-block" id="toggleStream">
+            <div class="btn-group" style="width:100%">
+              <button class='btn btn-large navigatePoints' style="width:50%" data-navigate="up"><i class="icon-arrow-up"></i> Previous point</button>
+              <button class='btn btn-large navigatePoints' style="width:50%"data-navigate="down">Next point <i class="icon-arrow-down"></i></button>
+              </div>
+            <button class="btn btn-large btn-danger btn-block" id="toggleStream">
           {{#if currentStreamStatus "finished"}}
             Start stream
           {{/if}}
@@ -185,8 +193,8 @@
 <template name="singlePointTemplate">
   {{> modalTemplate}}
   <button class="btn btn-primary btn-mini viewFeedback">{{AllComments}}</button>
-  <span class="label label-success">{{allThumbsUp}}</span>
-  <span class="label label-important">{{allThumbsDown}}</span>
+  <span class="badge badge-success">{{allThumbsUp}}</span>
+  <span class="badge badge-important">{{allThumbsDown}}</span>
   <span class="content">{{{this.content}}}</span>
   <div class="btn-group pull-right">
     <button class="edit btn btn-mini">edit</button>

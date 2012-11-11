@@ -54,16 +54,23 @@ Streams.allow({
     if(modifier['$set']) {
       var points = modifier['$set'].points;
       if(points) { //we're checking here that there is no such point in the new points array for which I have more than one vote
+        // for (var i = points.length - 1; i >= 0; i--) {
+        //   var point = points[i];
+        //   // console.log(point.thumbsUp.length, point.thumbsDown.length);
+        //   for (var x = point.thumbsUp.length - 1; x >= 0; x--) {
+        //     console.log(point.thumbsUp[x]);
+        //   };
+        // };
+
         for (var i=0; i<points.length; i++) {
-          //console.log(points[i]);
           var point = points[i];
           var myThumbsUpOrDown = 0;
-          for(var i=0; i<point.thumbsUp.length; i++) {
-            if(point.thumbsUp[i] == userId)
+          for(var x=0; x<point.thumbsUp.length; x++) {
+            if(point.thumbsUp[x] == userId)
               myThumbsUpOrDown++;
           }
-          for(var i=0; i<point.thumbsDown.length; i++) {
-            if(point.thumbsDown[i] == userId)
+          for(var x=0; x<point.thumbsDown.length; x++) {
+            if(point.thumbsDown[x] == userId)
               myThumbsUpOrDown++;
           }
           if(myThumbsUpOrDown > 1) {
