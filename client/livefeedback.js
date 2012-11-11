@@ -317,13 +317,13 @@ Template.ownerView.events = {
   'click .edit' : function(e) {
     var editButton = $(e.srcElement);
     var pointContent = editButton.parent().siblings('span.content');
-    if(pointContent.has('textarea.pointEditor').length > 0) {
+    if(pointContent.has('input.pointEditor').length > 0) {
       editButton.text('edit');
-      editPoint(this, {content: pointContent.find('textarea.pointEditor').val()}); 
+      editPoint(this, {content: pointContent.find('input.pointEditor').val()}); 
     } 
     else {
       var currentHtml = pointContent.html();
-      var input = $('<textarea type="text" class="pointEditor span2" rows="3"/>');
+      var input = $('<input type="text" class="pointEditor span3"/>');
       input.keypress(function(e){
         if(e.keyCode == 13) 
           $(this).parent().find('.edit').trigger('click');
@@ -352,9 +352,11 @@ Template.modalTemplate.comments = function() {
 }
 
 Template.singlePointTemplate.allThumbsUp = function() {
-  return (this.thumbsUp.length == 0) ? '0' : '+'+this.thumbsUp.length.toString();
+  var thumbsString = (this.thumbsUp.length == 0) ? '0' : '+'+this.thumbsUp.length.toString();
+  return thumbsString;
 };
 Template.singlePointTemplate.allThumbsDown = function() {
+<<<<<<< HEAD
   return (this.thumbsDown.length == 0) ? '0' : '-'+this.thumbsDown.length.toString();
 };
 Template.singlePointTemplate.AllComments = function() {
@@ -362,6 +364,10 @@ Template.singlePointTemplate.AllComments = function() {
 };
 Template.singleModeratorsTemplate.owners = function() {
   //FIXX!!return Meteor.users.findOne(this.toString()).profile.name;
+=======
+  var thumbsString = (this.thumbsDown.length == 0) ? '0' : '-'+this.thumbsDown.length.toString();  
+  return thumbsString;
+>>>>>>> parent of d2fca0a... feedback counter, moderators
 };
 
 ////////// Tracking selected stream in URL //////////
