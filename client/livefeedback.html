@@ -20,7 +20,9 @@
 </body>
 
 <template name="loading">
-  <img src="img/loader.gif"/>
+  <div class="container">
+  <div id="spinner" ></div>
+  </div>
 </template>
 
 <template name="app">
@@ -249,10 +251,9 @@
         <div class="participant-view">
           Current Stream: <strong>{{currentStream.name}}</strong>
           <div class="container-results">
-
+            <div style="padding: 20px 0px; text-align: center;">{{{activePoint.content}}}</div>
             <div class="row-fluid">
-              <div class="box-point-content" style="text-align: center">{{{activePoint.content}}}</div>
-              <br/>
+              <div></div>
               <div class="box-vote span3 offset3 btn-success"><h1>+{{currentPointVotes "Up"}}</h1></div>
               <div class="box-vote span3 btn-danger"><h1>-{{currentPointVotes "Down"}}</h1></div>
             </div>
@@ -272,9 +273,16 @@
           </div>
         </div>
       {{else}}
+      <table width = "100%">
+        <tr><td>
         <button id="voteUp" class=" btn-large btn-block btn-primary" type="button">Vote Up</button>
+        </td></tr>
+        <tr><td valign="center" style="height: 200px;">
         <div class="box-point-content" style="text-align: center">{{{activePoint.content}}}</div>
+        </td></tr>
+        <tr><td>
         <button id="voteDown" class="btn btn-large btn-block btn-danger" type="button">Vote Down</button>
+        </td></tr>
       {{/if}}
     {{else}}
       <div>no active point</div>
