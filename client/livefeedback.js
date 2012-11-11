@@ -316,7 +316,7 @@ Template.ownerView.events = {
   },
   'click #newPointBtn' : function() {
     if($("#newPointContent").val() == "") {
-      alert('hey, stfu and put in a point');
+      alert('put in a point');
       return false
     };
     createPoint({
@@ -331,7 +331,7 @@ Template.ownerView.events = {
     //   return false
     // }
     if($("#newPointContent").val() == "") {
-      alert('hey, stfu and put in a point');
+      alert('put in a point');
       return false
     };
     createPoint({
@@ -355,9 +355,6 @@ Template.ownerView.events = {
     } else if (currentStatus == 'finished' && !atLeastOnePointIsActive) {
       alert('Make a point active');
     }
-  },
-  'click #submitNewModerator': function() {
-    alert('Meteor error: all the data is now erased');
   },
   'keypress #newPointContent' : function(e) {
     if(e.keyCode == 13 ) $('#newPointBtn').trigger('click');
