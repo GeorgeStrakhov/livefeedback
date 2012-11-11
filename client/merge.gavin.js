@@ -104,3 +104,7 @@ Handlebars.registerHelper("currentPointVotes", function(direction) {
 Handlebars.registerHelper("hasVoted", function() {
   return thisPoint.hasVoted();
 });
+
+Handlebars.registerHelper("tasksLoaded", function() {
+  return Session.get('tasksLoaded');
+});

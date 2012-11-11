@@ -3,8 +3,12 @@
 </head>
 
 <body>
-  {{> app}}
+    {{> app}}
 </body>
+
+<template name="loading">
+  <img src="loader.gif"/>
+</template>
 
 <template name="app">
   {{#if urlPart}} <!-- if there the url is something glike http://livefeedback.mobi/streams/id-->
@@ -59,19 +63,19 @@
 </template>
 
 <template name="singleStream">
-  {{#if currentStream._id}} <!-- if such a stream exists -->
-    {{#if currentUser}}
-      {{#if myOwnStream}}
-        {{> ownerView}}
+    {{#if currentStream._id}} <!-- if such a stream exists -->
+      {{#if currentUser}}
+        {{#if myOwnStream}}
+          {{> ownerView}}
+        {{else}}
+          {{> participantView}}
+        {{/if}}
       {{else}}
-        {{> participantView}}
+        {{> signIn}}
       {{/if}}
     {{else}}
-      {{> signIn}}
+        {{> page404}}
     {{/if}}
-  {{else}}
-    {{> page404}}
-  {{/if}}
 </template>
 
 <template name="page404">
@@ -116,9 +120,6 @@
 </template>
 
 <template name="participantView">
-  {{#if currentStreamStatus "finished"}}
-    {{> finishedStreamView}}
-  {{/if}}
   {{#if currentStreamStatus "active"}}
     {{#if activePoint "true"}}
       {{#if hasVoted "true"}}
@@ -141,6 +142,9 @@
     {{else}}
       <div>no active point</div>
     {{/if}}
+    {{#if currentStreamStatus "finished"}}
+      {{> finishedStreamView}}
+    {{/if}}
   {{/if}}
 </template>
 
@@ -150,5 +154,11 @@
 </template>
 
 <template name="finishedStreamView">
-  finished stream ciew under coonstruction...
+  The stream: <strong>{{currentStream.name}}</strong> has ended, thank you for participating.
+  <p></p>
+  <p>For information and updates please sign up for our zero-spam mailing list:
+  <textarea type="text" id="newsletterEmail" placeholder="type any HTML and be happy" class=""/>
+  <button class="btn" id="submitNewsletter">Submit</button>
+  </p>
+  
 </template>
