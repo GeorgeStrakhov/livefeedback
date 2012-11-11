@@ -1,3 +1,5 @@
+//////////////startup stuff////////////////
+
 Meteor.startup(function() {
   if(!Accounts.loginServiceConfiguration.findOne()) { //if we just restarted the app and facebook login is not configured
     if(Meteor.absoluteUrl() == "http://localhost:3000/") {
@@ -18,6 +20,37 @@ Meteor.startup(function() {
 });
 
 Streams = new Meteor.Collection("streams");
+
+////////////methods//////////////////
+
+Meteor.methods({
+  'test': function(bb) {
+    //console.log(bb);
+    return "something interesting "+bb;
+    //throw new Meteor.Error(404, bb+"Can't find my pants");
+  },
+  'addCollaborator' : function(email, streamId) {
+    if(! email) {
+      throw new Meteor.Error(404, "No email received!");
+      return;
+    }
+    if(! streamId) {
+      throw new Meteor.Error(404, "No current StreamId provided");
+      return;
+    }
+    var newCollaborator = Meteor.users.findOne({"services.facebook.email": email});
+     //find a user with such an email
+    //console.log(newCollaborator);
+    if(newCollaborator) { //there is a user with such an email
+      //first add this user to the list of owners of the current stream
+      
+      //second send an email
+      return "added successfully";
+    }
+  }
+});
+
+////////////allow logic/////////////
 
 Streams.allow({
   insert: function (userId, doc) {
@@ -82,6 +115,8 @@ Streams.allow({
     return false; //there is no removing for now
   }
 });
+
+/////////publish stuff///////////
 
 Meteor.publish("streams", function () { //only publish the streams to the Client of which he/she is an owner or a joiner of
   return Streams.find();
