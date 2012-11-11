@@ -1,9 +1,22 @@
 <head>
   <title>LiveFeedBack.mobi - get live feedback from any audience</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="get live feedback from any audience">
+      
+  <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,700,600" rel="stylesheet">
+  <link href="http://fonts.googleapis.com/css?family=Open+Sans+Condensed:700,300" rel="stylesheet" type="text/css">
+  <link href="http://fonts.googleapis.com/css?family=Delius+Swash+Caps" rel="stylesheet" type="text/css">
+  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
 </head>
 
 <body>
+  <div class="container">
     {{> app}}
+  </div>
 </body>
 
 <template name="loading">
@@ -23,8 +36,38 @@
 </template>
 
 <template name="welcome">
-  welcome screen under construction...
-  {{loginButtons}}
+  <div class="row">
+      <div class="feature span12">
+          <h2 class="motto"><strong>LiveFeedBack</strong></h2>
+          <h3 class="subheader">get instant live feedback from your audience</h3>
+          <img id="feature-screenshot" src="img/pics/feature.png" alt="screenshot" />
+      </div>
+  </div>
+  <div class="row">
+      <div class="span12 center">
+          <a href="#" class="signup" id="signInButton">Sign in with Facebook</a>
+      </div>
+  </div>
+  <div class="row">
+    <div class="span12 center">
+      <br /><p>or</p>
+      <a href="#" id="learnMoreLink">learn more</a>
+    </div>
+  </div>
+  <div class="row hide" id="learnMoreDiv">
+      <div class="span12 box drop-shadow">
+        blah blah
+      </div>
+  </div>
+  <div class="row footer">
+      <div class="span12 center">
+          <ul class="links">
+              <li>2012 &copy; LiveFeedBack.mobi</li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="mailto:hello@livefeedback.org">Contact</a></li>
+          </ul>           
+      </div>
+  </div>
 </template>
 
 <template name="myStreams">
@@ -90,33 +133,91 @@
 
 <template name="ownerView">
   <div class="container">
-    <h3>Stream points</h3>
-    <ul class="points span4 clearfix">
-      {{#each currentStream.points}}
-        <li class="{{#if this.isActive}}active {{/if}}point">
-          {{> singlePointTemplate}}
-          <div class="btn-group pull-right">
-            <button class="edit btn btn-mini">edit</button>
-            <button class="delete btn btn-danger btn-mini">delete</button>
-            <button class="makeActive btn btn-success btn-mini">activate</button>
-          </div>
-        </li>
-      {{/each}}
-      <li>
-        <textarea type="text" id="newPointContent" placeholder="type any HTML and be happy" class="span4 inputNewPoint"/>
-        <div class="btn-group">
-          <button class="btn span2" id="newPointBtn">add</button>
-          <button class="btn span2" id="newPointBtnAndActivate">add and make active</button>          
+    <div class="row">
+      <div class="span6">
+        <h3>Stream points - <strong>{{currentStream.name}}</strong> </h3>
+        <ul class="points">
+          <li class="navItems"><a href="/">go back to my streams</a></li>
+          <li class="navItems">Current stream <strong>({{currentStream.name}})</strong> is {{currentStream.status}} 
+          {{#if currentStreamStatus "active"}}
+                and has <strong>{{currentStream.joiners.length}}</strong> followers
+              {{/if}}</li>
+          {{#each currentStream.points}}
+            <li class="{{#if this.isActive}}active {{/if}}point">
+              {{> singlePointTemplate}}
+            </li>
+          {{/each}}
+          <li class="addNewPointContainer">
+            <textarea rows='3' type="text" id="newPointContent" placeholder="type any HTML and be happy" class="inputNewPoint"/>
+            <button class="btn btn-block btn-large" id="newPointBtn">Add a new point</button>
+            <button class="btn btn-block btn-success btn-large" id="newPointBtnAndActivate">Add a new point and make it active</button>
+                    <button class="btn btn-large btn-danger btn-block" id="toggleStream">
+          {{#if currentStreamStatus "finished"}}
+            Start stream
+          {{/if}}
+          {{#if currentStreamStatus "active"}}
+            Finish stream
+          {{/if}}
+        </button>
+          </li>
+        </ul>
+      </div>
+      <div class="span6">
+        <h3>Stream settings</h3>
+        <h4>Invite moderators</h4>
+        <div class="form-inline">
+          <input type="text" placeholder="gavin@cheng.com" class="">
+          <button class="btn" id="submitNewModerator">Invite</button>
         </div>
-      </li>
-    </ul>
+        <h4>Current moderators</h4>
+        <ul class="moderators">
+          {{#each currentStream.owners}}
+          <li>{{> singleModeratorsTemplate}}</li>
+          {{/each}}
+        </ul>
+        <h4>Change stream name</h4>
+        <div class="form-inline">
+          <input type="text" placeholder="My awesome Stream" id="newStreamNameInput">
+          <button class="btn" id="changeStreamName">Change</button>
+        </div>
+
+      </div>
+    </div>
   </div>
 </template>
 
 <template name="singlePointTemplate">
+  {{> modalTemplate}}
+  <button class="btn btn-primary btn-mini viewFeedback">{{AllComments}}</button>
   <span class="label label-success">{{allThumbsUp}}</span>
   <span class="label label-important">{{allThumbsDown}}</span>
   <span class="content">{{{this.content}}}</span>
+  <div class="btn-group pull-right">
+    <button class="edit btn btn-mini">edit</button>
+    <button class="delete btn btn-danger btn-mini">delete</button>
+    <button class="makeActive btn btn-success btn-mini">activate</button>
+  </div>
+</template>
+
+<template name="modalTemplate">
+  <div class="modal hide fade">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h3>Comments</h3>
+    </div>
+    <div class="modal-body">
+      {{#each comments}}
+        <blockquote>
+          <p>{{this.text}}</p>
+          <small>{{this.userId}}</small>
+        </blockquote>
+      {{/each}}
+    </div>
+  </div>
+</template>
+
+<template name="singleModeratorsTemplate">
+    {{owners}}
 </template>
 
 <template name="participantView">

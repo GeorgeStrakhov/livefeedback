@@ -3,13 +3,11 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-autopublish
-insecure
 preserve-inputs
 jquery
 accounts-base
 accounts-facebook
-accounts-ui
 bootstrap
 backbone
 less
+accounts-ui-unstyled

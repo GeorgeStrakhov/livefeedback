@@ -1,4 +1,6 @@
 Streams = new Meteor.Collection("streams");
+Meteor.subscribe("streams");
+Meteor.subscribe("userDirectory");
 
 ////////// global reactive helpers ///////////
 Handlebars.registerHelper("urlPart", function() {
@@ -121,6 +123,10 @@ function makeAllPointsInActive() {
 }
 
 function makePointActive(point) { // shorthand for editPoint
+  // if(Streams.findOne({_id: Session.get("currentStream")}).status == 'finished') {
+  //   alert('First start stream');
+  //   return false
+  // }
   editPoint(point, {isActive: true});
 }
 
@@ -155,6 +161,17 @@ function setActivePoint(which) { //which can be "next", "prev" or "rand"
 };
 
 ////////// Template specific behavior ////////////
+
+Template.welcome.events = {
+  'click #signInButton' : function(e) {
+    e.preventDefault();
+    Meteor.loginWithFacebook();
+  },
+  'click #learnMoreLink' : function(e) {
+    e.preventDefault();
+    $("#learnMoreDiv").show('slow');
+  },
+};
 
 Template.myStreams.allStreams = function() {
   var allStreams = Streams.find({owners: {$all: [Meteor.userId()]}}).fetch(); //should match if current use is one of the owners
@@ -222,23 +239,28 @@ Template.singleStreamItem.joinersCount = function() {
 Template.ownerView.rendered = function() {
   $('li.point').on({
     hover : function(){
-      $(this).find('button').toggle();
+      $(this).find('div.btn-group').find('button').toggle();
     }
   });
 };
 
 Template.singleStreamItem.namesOfPeopleWhoJoined = function() {
-  var names = "";
-  $.each(this.joiners, function() {
-  //console.log(this.toString());
-    if(names != "")
-      names +=", ";
-    var nextName = Meteor.users.findOne(this.toString()).profile.name;
-    names += nextName;
-  });
-  if (names == "")
-    names = "nobody joined yet..."
-  return names;
+  if(Meteor.userLoaded()) {
+    var names = "";
+    $.each(this.joiners, function() {
+    //console.log(this.toString());
+      if(names != "")
+        names +=", ";
+      //console.log(Meteor.users.findOne());
+      if(Meteor.users.findOne(this.toString())) {
+        var nextName = Meteor.users.findOne(this.toString()).profile.name;
+        names += nextName;
+      }
+    });
+    if (names == "")
+      names = "nobody joined yet..."
+    return names;
+  }
 };
 
 Template.ownerView.events = {
@@ -254,6 +276,10 @@ Template.ownerView.events = {
     $("#newPointContent").focus();
   },
   'click #newPointBtnAndActivate': function() {
+    // if(Streams.findOne({_id: Session.get("currentStream")}).status == 'finished') {
+    //   alert('First start stream');
+    //   return false
+    // }
     if($("#newPointContent").val() == "") {
       alert('hey, stfu and put in a point');
       return false
@@ -265,6 +291,24 @@ Template.ownerView.events = {
     $("#newPointContent").val('');
     $("#newPointContent").focus();
   },
+  'click #toggleStream': function() {
+    var atLeastOnePointIsActive = false;
+    var currentStatus = Streams.findOne({_id: Session.get("currentStream")}).status;
+    $.each(getCurrentStreamPoints(), function(){
+      if(this.isActive) atLeastOnePointIsActive = true;
+    });
+    if(currentStatus == 'finished' && atLeastOnePointIsActive) {
+      Streams.update({_id: Session.get("currentStream")},{$set: {status: 'active'}});
+    } else if (currentStatus == 'active'){
+      makeAllPointsInActive();
+      Streams.update({_id: Session.get("currentStream")},{$set: {status: 'finished'}});
+    } else if (currentStatus == 'finished' && !atLeastOnePointIsActive) {
+      alert('Make a point active');
+    }
+  },
+  'click #submitNewModerator': function() {
+    alert('Meteor error: all the data is now erased');
+  },
   'keypress #newPointContent' : function(e) {
     if(e.keyCode == 13 ) $('#newPointBtn').trigger('click');
   },
@@ -274,13 +318,13 @@ Template.ownerView.events = {
   'click .edit' : function(e) {
     var editButton = $(e.srcElement);
     var pointContent = editButton.parent().siblings('span.content');
-    if(pointContent.has('input.pointEditor').length > 0) {
+    if(pointContent.has('textarea.pointEditor').length > 0) {
       editButton.text('edit');
-      editPoint(this, {content: pointContent.find('input.pointEditor').val()}); 
+      editPoint(this, {content: pointContent.find('textarea.pointEditor').val()}); 
     } 
     else {
       var currentHtml = pointContent.html();
-      var input = $('<input type="text" class="pointEditor span3"/>');
+      var input = $('<textarea type="text" class="pointEditor span2" rows="3"/>');
       input.keypress(function(e){
         if(e.keyCode == 13) 
           $(this).parent().find('.edit').trigger('click');
@@ -291,16 +335,34 @@ Template.ownerView.events = {
   }, 
   'click .makeActive' : function() {
     makePointActive(this);
+  },
+  'click #changeStreamName' : function() {
+    if($('#newStreamNameInput').val() =='') {
+      alert('Put in a new Stream name');
+      return false
+    };
+    Streams.update(
+    {_id: Session.get("currentStream")},
+    {$set: 
+    {'name': $('#newStreamNameInput').val()}});
   }
 };
+Template.modalTemplate.comments = function() {
+  console.log(this.comments);
+  // return this.comments;
+}
 
 Template.singlePointTemplate.allThumbsUp = function() {
-  var thumbsString = (this.thumbsUp.length == 0) ? '0' : '+'+this.thumbsUp.length.toString();
-  return thumbsString;
+  return (this.thumbsUp.length == 0) ? '0' : '+'+this.thumbsUp.length.toString();
 };
 Template.singlePointTemplate.allThumbsDown = function() {
-  var thumbsString = (this.thumbsDown.length == 0) ? '0' : '-'+this.thumbsDown.length.toString();  
-  return thumbsString;
+  return (this.thumbsDown.length == 0) ? '0' : '-'+this.thumbsDown.length.toString();
+};
+Template.singlePointTemplate.AllComments = function() {
+  return (this.comments.length.toString() == '1') ? (this.comments.length.toString() + ' feedback') : (this.comments.length.toString() + ' feedbacks');
+};
+Template.singleModeratorsTemplate.owners = function() {
+  return Meteor.users.findOne(this.toString()).profile.name;
 };
 
 ////////// Tracking selected stream in URL //////////
@@ -329,5 +391,3 @@ Router = new StreamsRouter;
 Meteor.startup(function () {
   Backbone.history.start();//{pushState: true});
 });
-
-// JQUERY SHIT
