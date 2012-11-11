@@ -1,5 +1,13 @@
 //////////////startup stuff////////////////
 
+process.env.MAIL_URL = "smtp://george.strakhov@gmail.com:742b3cc-6073-4910-9b02-fd6268350010@smtp.mandrillapp.com:587/";
+
+/*
+Hostname : smtp.mailgun.org
+Login    : postmaster@livefeedback.mailgun.org
+Password : 69mcd874et05
+*/
+
 Meteor.startup(function() {
   if(!Accounts.loginServiceConfiguration.findOne()) { //if we just restarted the app and facebook login is not configured
     if(Meteor.absoluteUrl() == "http://localhost:3000/") {
@@ -49,12 +57,14 @@ Meteor.methods({
         //console.log(stream);
         Streams.update(streamId, {$addToSet: {owners: newCollaborator._id}});      
       //second send an email
+      /* doesn't work for now:((( FIX!!!
         Email.send({
           from : "From:noreply@livefeedback.mobi",
           to : "To:"+email,
           subject: Meteor.users.findOne(userId).profile.name+" invited you to be a moderator for his livestream",
           text: "Please go to "+Meteor.absoluteUrl()+" and login if you are willing to help"
         });
+      */
         return "added successfully";
       } else {
         throw new Meteor.Error(404, "no such stream in the db");
@@ -78,7 +88,7 @@ Streams.allow({
     if(fields[0] == "joiners") {
       return true; //properly we also need to check that I'm not yet a joiner and I'm adding myself but later
     }
-    console.log(JSON.stringify(modifier));
+    //console.log(JSON.stringify(modifier));
     //disallow if I'm trying to change the stream(s) that I'm neither a joiner nor an owner of (unless I'm adding a new joiner that is me)
     var notAnOwner = true;
     for(var i=0; i<stream.owners.length; i++) {
