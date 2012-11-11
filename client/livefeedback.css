@@ -5,21 +5,21 @@
 }
 
 li.active {
-	background-color: #33FF33;
+	background-color: #66FF33;
 }
 
 li.point {
 	margin: 0px;
 	padding: 10px;
 	border: solid 1px #CCC;
-	border-radius: 3px;
-	cursor: pointer
+	border-radius: 5px;
+	/*cursor: pointer*/
 }
 ul.points {
 	margin:0;
 	list-style: none;
 }
-li.point button {
+li.point .btn-group button {
 	/*float:right;*/
 	/*margin: 0px 2px;*/
 	display: none;
@@ -29,5 +29,22 @@ li.point img {
 	max-height: 50px;
 }
 .inputNewPoint {
-	margin-top: 10px;
+	/*margin-top: 10px;*/
+	border-radius: 5px;
+	margin:0;
+	display: block;
+	width: 100%;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+/*.addNewPointContainer button .btn{
+	margin-top:0px;
+}*/
+.addNewPointContainer .btn-block {
+	margin-top:0px;
+}
+.navItems {
+	text-align: center;
+	padding: 5px;
 }

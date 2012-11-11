@@ -122,6 +122,10 @@ function makeAllPointsInActive() {
 }
 
 function makePointActive(point) { // shorthand for editPoint
+  // if(Streams.findOne({_id: Session.get("currentStream")}).status == 'finished') {
+  //   alert('First start stream');
+  //   return false
+  // }
   editPoint(point, {isActive: true});
 }
 
@@ -234,7 +238,7 @@ Template.singleStreamItem.joinersCount = function() {
 Template.ownerView.rendered = function() {
   $('li.point').on({
     hover : function(){
-      $(this).find('button').toggle();
+      $(this).find('div.btn-group').find('button').toggle();
     }
   });
 };
@@ -271,6 +275,10 @@ Template.ownerView.events = {
     $("#newPointContent").focus();
   },
   'click #newPointBtnAndActivate': function() {
+    // if(Streams.findOne({_id: Session.get("currentStream")}).status == 'finished') {
+    //   alert('First start stream');
+    //   return false
+    // }
     if($("#newPointContent").val() == "") {
       alert('hey, stfu and put in a point');
       return false
@@ -281,6 +289,24 @@ Template.ownerView.events = {
     });
     $("#newPointContent").val('');
     $("#newPointContent").focus();
+  },
+  'click #toggleStream': function() {
+    var atLeastOnePointIsActive = false;
+    var currentStatus = Streams.findOne({_id: Session.get("currentStream")}).status;
+    $.each(getCurrentStreamPoints(), function(){
+      if(this.isActive) atLeastOnePointIsActive = true;
+    });
+    if(currentStatus == 'finished' && atLeastOnePointIsActive) {
+      Streams.update({_id: Session.get("currentStream")},{$set: {status: 'active'}});
+    } else if (currentStatus == 'active'){
+      makeAllPointsInActive();
+      Streams.update({_id: Session.get("currentStream")},{$set: {status: 'finished'}});
+    } else if (currentStatus == 'finished' && !atLeastOnePointIsActive) {
+      alert('Make a point active');
+    }
+  },
+  'click #submitNewModerator': function() {
+    alert('Meteor error: all the data is now erased');
   },
   'keypress #newPointContent' : function(e) {
     if(e.keyCode == 13 ) $('#newPointBtn').trigger('click');
@@ -308,8 +334,22 @@ Template.ownerView.events = {
   }, 
   'click .makeActive' : function() {
     makePointActive(this);
+  },
+  'click #changeStreamName' : function() {
+    if($('#newStreamNameInput').val() =='') {
+      alert('Put in a new Stream name');
+      return false
+    };
+    Streams.update(
+    {_id: Session.get("currentStream")},
+    {$set: 
+    {'name': $('#newStreamNameInput').val()}});
   }
 };
+Template.modalTemplate.comments = function() {
+  console.log(this.comments);
+  // return this.comments;
+}
 
 Template.singlePointTemplate.allThumbsUp = function() {
   return (this.thumbsUp.length == 0) ? '0' : '+'+this.thumbsUp.length.toString();
@@ -321,8 +361,9 @@ Template.singlePointTemplate.AllComments = function() {
   return (this.comments.length.toString() == '1') ? (this.comments.length.toString() + ' feedback') : (this.comments.length.toString() + ' feedbacks');
 };
 Template.singleModeratorsTemplate.owners = function() {
-  //FIXX!!return Meteor.users.findOne(this.toString()).profile.name;
+  return Meteor.users.findOne(this.toString()).profile.name;
 };
+
 ////////// Tracking selected stream in URL //////////
 
 var StreamsRouter = Backbone.Router.extend({
@@ -349,5 +390,3 @@ Router = new StreamsRouter;
 Meteor.startup(function () {
   Backbone.history.start();//{pushState: true});
 });
-
-// JQUERY SHIT
