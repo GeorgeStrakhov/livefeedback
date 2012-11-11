@@ -150,6 +150,17 @@ function setActivePoint(which) { //which can be "next", "prev" or "rand"
 
 ////////// Template specific behavior ////////////
 
+Template.welcome.events = {
+  'click #signInButton' : function(e) {
+    e.preventDefault();
+    Meteor.loginWithFacebook();
+  },
+  'click #learnMoreLink' : function(e) {
+    e.preventDefault();
+    $("#learnMoreDiv").show('slow');
+  },
+};
+
 Template.myStreams.allStreams = function() {
   var allStreams = Streams.find({owners: {$all: [Meteor.userId()]}}).fetch(); //should match if current use is one of the owners
   return allStreams;
