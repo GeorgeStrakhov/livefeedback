@@ -176,6 +176,9 @@ Template.myStreams.allStreams = function() {
   var allStreams = Streams.find({owners: {$all: [Meteor.userId()]}}).fetch(); //should match if current use is one of the owners
   return allStreams;
 };
+Template.myStreams.userName = function() {
+  if(Meteor.userLoaded()) return Meteor.user().profile.name
+};
 
 Template.myStreams.noStreamsYet = function() {
   var allStreams = Streams.find({owners: {$all: [Meteor.userId()]}}).fetch(); //should match if current use is one of the owners
@@ -230,11 +233,17 @@ Template.myStreams.events = {
       alert("please enter the name of the stream!");
     }
   },
+  'click #logoutButton': function() {
+    Meteor.logout();
+  }
 };
 
 Template.singleStreamItem.joinersCount = function() {
   return this.joiners.length;
 };
+Template.singleStreamItem.isActive = function() {
+  return this.status == "active";
+}
 Template.ownerView.rendered = function() {
   $('li.point').on({
     hover : function(){
