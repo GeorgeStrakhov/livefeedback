@@ -30,6 +30,7 @@ Meteor.methods({
     //throw new Meteor.Error(404, bb+"Can't find my pants");
   },
   'addCollaborator' : function(email, streamId) {
+    var userId = this.userId; //user invoking this
     if(! email) {
       throw new Meteor.Error(404, "No email received!");
       return;
@@ -43,9 +44,24 @@ Meteor.methods({
     //console.log(newCollaborator);
     if(newCollaborator) { //there is a user with such an email
       //first add this user to the list of owners of the current stream
-      
+      var stream = Streams.findOne(streamId);
+      if(stream) {
+        //console.log(stream);
+        Streams.update(streamId, {$addToSet: {owners: newCollaborator._id}});      
       //second send an email
-      return "added successfully";
+        Email.send({
+          from : "From:noreply@livefeedback.mobi",
+          to : "To:"+email,
+          subject: Meteor.users.findOne(userId).profile.name+" invited you to be a moderator for his livestream",
+          text: "Please go to "+Meteor.absoluteUrl()+" and login if you are willing to help"
+        });
+        return "added successfully";
+      } else {
+        throw new Meteor.Error(404, "no such stream in the db");
+      }
+
+    } else {
+      throw new Meteor.Error(404, "Such user is not in the system yet.");
     }
   }
 });
