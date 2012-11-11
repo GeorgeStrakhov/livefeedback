@@ -135,46 +135,61 @@
 <template name="ownerView">
   <div class="container">
     <div class="row">
-      <div class="span5">
-        <h3>Stream points</h3>
-      </div>
-      <div class="span3">
-        <h3>Organizators</h3>
-      </div>
-    </div>
-    <div class="row">
-      <div class="span5">
-        <ul class="points span5">
+      <div class="span6">
+        <h3>Stream points - <strong>{{currentStream.name}}</strong> </h3>
+        <ul class="points">
+          <li class="navItems"><a href="/">go back to my streams</a></li>
+          <li class="navItems">Current stream <strong>({{currentStream.name}})</strong> is {{currentStream.status}} 
+          {{#if currentStreamStatus "active"}}
+                and has <strong>{{currentStream.joiners.length}}</strong> followers
+              {{/if}}</li>
           {{#each currentStream.points}}
             <li class="{{#if this.isActive}}active {{/if}}point">
               {{> singlePointTemplate}}
             </li>
           {{/each}}
-          <li>
-            <textarea type="text" id="newPointContent" placeholder="type any HTML and be happy" class="span5 inputNewPoint"/>
-            <div class="btn-group">
-              <button class="btn span2" id="newPointBtn">add</button>
-              <button class="btn span2" id="newPointBtnAndActivate">add and make active</button>          
-            </div>
+          <li class="addNewPointContainer">
+            <textarea rows='3' type="text" id="newPointContent" placeholder="type any HTML and be happy" class="inputNewPoint"/>
+            <button class="btn btn-block btn-large" id="newPointBtn">Add a new point</button>
+            <button class="btn btn-block btn-success btn-large" id="newPointBtnAndActivate">Add a new point and make it active</button>
+                    <button class="btn btn-large btn-danger btn-block" id="toggleStream">
+          {{#if currentStreamStatus "finished"}}
+            Start stream
+          {{/if}}
+          {{#if currentStreamStatus "active"}}
+            Finish stream
+          {{/if}}
+        </button>
           </li>
         </ul>
       </div>
-      <div class="span3">
-        <label>Invite your friends</label>
-        <input type="text" placeholder="gavin@cheng.com">
-        <button class="btn">Submit</button>
+      <div class="span6">
+        <h3>Stream settings</h3>
+        <h4>Invite moderators</h4>
+        <div class="form-inline">
+          <input type="text" placeholder="gavin@cheng.com" class="">
+          <button class="btn" id="submitNewModerator">Invite</button>
+        </div>
+        <h4>Current moderators</h4>
         <ul class="moderators">
           {{#each currentStream.owners}}
           <li>{{> singleModeratorsTemplate}}</li>
           {{/each}}
         </ul>
+        <h4>Change stream name</h4>
+        <div class="form-inline">
+          <input type="text" placeholder="My awesome Stream" id="newStreamNameInput">
+          <button class="btn" id="changeStreamName">Change</button>
+        </div>
+
       </div>
     </div>
   </div>
 </template>
 
 <template name="singlePointTemplate">
-  <span class="label label-info">{{AllComments}}</span>
+  {{> modalTemplate}}
+  <button class="btn btn-primary btn-mini viewFeedback">{{AllComments}}</button>
   <span class="label label-success">{{allThumbsUp}}</span>
   <span class="label label-important">{{allThumbsDown}}</span>
   <span class="content">{{{this.content}}}</span>
@@ -182,6 +197,23 @@
     <button class="edit btn btn-mini">edit</button>
     <button class="delete btn btn-danger btn-mini">delete</button>
     <button class="makeActive btn btn-success btn-mini">activate</button>
+  </div>
+</template>
+
+<template name="modalTemplate">
+  <div class="modal hide fade">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h3>Comments</h3>
+    </div>
+    <div class="modal-body">
+      {{#each comments}}
+        <blockquote>
+          <p>{{this.text}}</p>
+          <small>{{this.userId}}</small>
+        </blockquote>
+      {{/each}}
+    </div>
   </div>
 </template>
 
