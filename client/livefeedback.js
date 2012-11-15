@@ -173,6 +173,13 @@ Template.welcome.events = {
   },
 };
 
+Template.signIn.events = {
+  'click #signInButton' : function(e) {
+    e.preventDefault();
+    Meteor.loginWithFacebook();
+  }
+};
+
 Template.myStreams.allStreams = function() {
   var allStreams = Streams.find({owners: {$all: [Meteor.userId()]}}).fetch(); //should match if current use is one of the owners
   return allStreams;

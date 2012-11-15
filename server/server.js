@@ -64,8 +64,8 @@ Meteor.methods({
         Email.send({
           from : "noreply@livefeedback.mobi",
           to : email,
-          subject: Meteor.users.findOne(userId).profile.name+" invited you to be a moderator for his livestream",
-          text: "Please go to "+Meteor.absoluteUrl()+" and login if you are willing to help moderate"+stream.name,
+          subject: Meteor.users.findOne(userId).profile.name+" invited you to be a moderator for '"+stream.name+"' livestream",
+          text: "Please go to "+Meteor.absoluteUrl()+"#stream/"+streamId+" and login if you are willing to help moderate a stream called '"+stream.name+"'",
         });
       
         return "added successfully";
