@@ -169,7 +169,7 @@ Template.welcome.events = {
   },
   'click #learnMoreLink' : function(e) {
     e.preventDefault();
-    $("#learnMoreDiv").show('slow');
+    $("#learnMoreDiv").toggle('slow');
   },
 };
 

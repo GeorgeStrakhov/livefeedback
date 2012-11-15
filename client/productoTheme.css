@@ -4,6 +4,10 @@ body {
     border-top:3px solid #ddd;
 }
 
+.about {
+  padding: 20px;
+}
+
 p {
     text-shadow:#fff 0 1px 0;
 }
