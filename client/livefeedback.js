@@ -27,6 +27,10 @@ Handlebars.registerHelper("myOwnStream", function() {
   return Session.get("myOwnStream");
 });
 
+Handlebars.registerHelper("invitation", function() {
+  return Session.get("invitation");
+});
+
 Meteor.autosubscribe(function() {
   Meteor.subscribe("currentStream", Session.get("currentStream"));
   console.log('stream changed');
@@ -177,6 +181,21 @@ Template.signIn.events = {
   'click #signInButton' : function(e) {
     e.preventDefault();
     Meteor.loginWithFacebook();
+  }
+};
+
+Template.invitation.events = {
+  'click #signInButton' : function(e) {
+    e.preventDefault();
+    Meteor.loginWithFacebook(function() {
+      Meteor.call('pendingOwnerJoined', Session.get("currentStream"), function(error, result) {
+        if(error)
+          alert(error.reason);
+        if(result)
+          console.log(result);
+          Router.navigate("stream/"+Session.get("currentStream"), true);
+      });
+    });
   }
 };
 
@@ -425,7 +444,7 @@ Template.singlePointTemplate.allThumbsDown = function() {
   return (this.thumbsDown.length == 0) ? '0' : '-'+this.thumbsDown.length.toString();
 };
 Template.singlePointTemplate.AllComments = function() {
-  return (this.comments.length.toString() == '1') ? (this.comments.length.toString() + ' feedback') : (this.comments.length.toString() + ' feedbacks');
+  return (this.comments.length.toString() == '1') ? (this.comments.length.toString() + ' comment') : (this.comments.length.toString() + ' comments');
 };
 Template.singleModeratorsTemplate.owners = function() {
   return Meteor.users.findOne(this.toString()).profile.name;
@@ -438,6 +457,7 @@ Template.singleModeratorsTemplate.owners = function() {
 var StreamsRouter = Backbone.Router.extend({
   routes: {
     "stream/:streamId": "stream",
+    "invite/:streamId": "invite",
     "": "main",
     "myStreams": "main",
     "*stuff": "main"
@@ -449,8 +469,13 @@ var StreamsRouter = Backbone.Router.extend({
     Session.set("currentStream", streamId);
     Session.set("urlPart", true);
   },
+  invite: function (streamId) { //this happens when a new user is invited to be a collaborator that was not a user before
+    Session.set("currentStream", streamId);
+    Session.set("urlPart", true);
+    Session.set("invitation", true);
+  },
   setStream: function (streamId) {
-    this.navigate("stream/".streamId, true);
+    this.navigate("stream/"+streamId, true);
   }
 });
 

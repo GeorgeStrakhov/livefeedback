@@ -142,8 +142,18 @@
 </template>
 
 <template name="signIn">
+  {{#if invitation}}
+    {{> invitation}}
+  {{else}}
+    <h1>Hello!</h1>
+    <p>In order to provide your live feedback to the stream called "{{currentStream.name}}", please <a href="#" class="signup" id="signInButton">Sign in with Facebook</a> </p>
+    <p>this live feedback is powered by <a href="http://livefeedback.mobi" target="_blank">LiveFeedback.mobi</a></p>
+  {{/if}}
+</template>
+
+<template name="invitation">
   <h1>Hello!</h1>
-  <p>In order to provide your live feedback to the stream called "{{currentStream.name}}", please <a href="#" class="signup" id="signInButton">Sign in with Facebook</a> </p>
+  <p>In order to help moderate the stream called "{{currentStream.name}}", please <a href="#" class="signup" id="signInButton">Sign in with Facebook</a> </p>
   <p>this live feedback is powered by <a href="http://livefeedback.mobi" target="_blank">LiveFeedback.mobi</a></p>
 </template>
 
@@ -153,7 +163,7 @@
       <div class="span6">
         <h3>Stream points - <strong>{{currentStream.name}}</strong> </h3>
         <ul class="points">
-          <li class="navItems"><a href="/myStreams">go back to my streams</a></li>
+          <li class="navItems"><a href="/">go back to my streams</a></li>
           <li class="navItems">Current stream <strong>({{currentStream.name}})</strong> is 
           {{#if currentStreamStatus "active"}}
           <span class="label label-success">ACTIVE</span> 
@@ -267,7 +277,7 @@
           </div>
           <div id="pointFeedback" class="container-feedback">
              <div class="input-append center">
-              <input class="" type="text" id="pointFeedbackText" size="auto" placeholder="Leave some feedback!" />
+              <input class="" type="text" id="pointFeedbackText" size="auto" placeholder="Leave a comment here!" />
               <button class="btn"  type="button" id="pointFeedbackButton">Submit</button>
             </div>
           </div>

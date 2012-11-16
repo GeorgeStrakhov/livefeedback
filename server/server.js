@@ -52,7 +52,8 @@ Meteor.methods({
     }
     var newCollaborator = Meteor.users.findOne({"services.facebook.email": email});
      //find a user with such an email
-    //console.log(newCollaborator);
+    console.log(email);
+    console.log(newCollaborator);
     if(newCollaborator) { //there is a user with such an email
       //first add this user to the list of owners of the current stream
       var stream = Streams.findOne(streamId);
@@ -73,9 +74,46 @@ Meteor.methods({
         throw new Meteor.Error(404, "no such stream in the db");
       }
 
-    } else {
-      throw new Meteor.Error(404, "Such user is not in the system yet.");
+    } else { //there is no user with such an email in the system yet.
+      var stream = Streams.findOne(streamId);
+      //first we append a new object "pendingOwners" [] to the current Stream (if it doesn't already exist) abd put the invitation email in there
+      Streams.update(streamId, {$push : {pendingOwners : email}});
+      //then we send an invitation email and attach a special thing to the URL so that the new user is added to the owners of this list. (don't forget to check the pendingOwners)
+      Email.send({
+        from: "noreply@livefeedback.mobi",
+        to: email,
+        subject: Meteor.users.findOne(userId).profile.name+" invited you to be a moderator for '"+stream.name+"' livestream",
+        text: "Please go to "+Meteor.absoluteUrl()+"#invite/"+streamId+" and login if you are willing to help moderate a stream called '"+stream.name+"'. This will only work if you use this email as your default email for Facebook. If not - please ask "+Meteor.users.findOne(userId).profile.name+" to invite you again using the right email. Thank you.",
+      });
+      //finally when the new user logs into the system with a special URL append - we double-check that it's the right user (email matches one in "pendingOwners") and add him as an owner and remove his email from pendingOnwers. [this part is done via backbone router and a 'pendingOwnerJoined' method call - see next]
+      throw new Meteor.Error(204, "Such user is not in the system yet. Sent an invitation email.");
     }
+  },
+  'pendingOwnerJoined' : function(streamId) { //this is a part of the invitation of a new user as a collaborator process. when a new user logs into the system with the #invite/streamId url - our router calls this method before redirecting the user to the stream.
+  //first double check that streamId is passed on and is valid
+    if(!streamId) {
+      throw new Meteor.Error(500, "no streamId passed");
+    }
+    var stream = Streams.findOne(streamId);
+    if (!stream) {
+      throw new Meteor.Error(404, "this stream doesn't exist"); 
+      return;
+    }
+    //then check that the email of the user who just joined is in this stream's pendingOwners array 
+    var currentUserEmail = "inna.givental@gmail.com"//Meteor.users.findOne(this.userId).services.facebook.email;
+    //console.log(Meteor.users.findOne(this.userId));
+    //console.log(this.userId);
+    if(currentUserEmail && stream.pendingOwners) {
+      for (var x=0; x<stream.pendingOwners.length; x++) {
+        if (stream.pendingOwners[x] == currentUserEmail) { //then remove it from there && add this user to the owners of this stream 
+          //console.log(Streams.findOne(streamId));
+          Streams.update(streamId, {$pull : {pendingOwners: currentUserEmail}});
+          Streams.update(streamId, {$addToSet: {owners: this.userId}});
+          //console.log(Streams.findOne(streamId));
+        }
+      }
+    }
+
   }
 });
 
