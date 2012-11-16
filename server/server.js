@@ -11,6 +11,7 @@ Password : 69mcd874et05
 Port: 587
 */
 
+
 Meteor.startup(function() {
   if(!Accounts.loginServiceConfiguration.findOne()) { //if we just restarted the app and facebook login is not configured
     if(Meteor.absoluteUrl() == "http://localhost:3000/") {
@@ -35,10 +36,37 @@ Streams = new Meteor.Collection("streams");
 ////////////methods//////////////////
 
 Meteor.methods({
-  'test': function(bb) {
-    //console.log(bb);
-    return "something interesting "+bb;
-    //throw new Meteor.Error(404, bb+"Can't find my pants");
+  'createNewStream': function(newStreamName) {
+    if(!newStreamName) {
+      throw new Meteor.Error(500, "no stream name passed!");
+      return;
+    }
+    if(Streams.findOne({name: newStreamName})){
+      throw new Meteor.Error(500, "Stream with such a name already exists! Please choose a different one.");
+      return;
+    }
+    var newStreamId = Streams.insert({
+      name: newStreamName, 
+      owners: [this.userId],
+      status: "active",
+      joiners: [],
+      points: []
+    });
+    //console.log(newStreamId);
+    //now call Google url short. api to generate a short url and a qr code
+    Meteor.http.call("POST", "https://www.googleapis.com/urlshortener/v1/url",
+                 {headers: {"Content-Type": "application/json"}, data: {"longUrl":Meteor.absoluteUrl()+"#stream/"+newStreamId}},
+                 function (error, result) {
+                   if (error) {
+                    console.log(error);
+                   }
+                   if (result.statusCode == "200") {
+                     //console.log(result);
+                     //console.log(result.data.id);
+                     Streams.update(newStreamId, {$set: {shortUrl: result.data.id}});
+                   }
+                 });
+    return newStreamId;
   },
   'addCollaborator' : function(email, streamId) {
     var userId = this.userId; //user invoking this
@@ -121,7 +149,7 @@ Meteor.methods({
 
 Streams.allow({
   insert: function (userId, doc) {
-    return (userId && doc.owners[0] == userId);
+    return false;
   },
   update: function (userId, docs, fields, modifier) {
     var stream = docs[0];

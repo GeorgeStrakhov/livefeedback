@@ -46,17 +46,6 @@ Meteor.autosubscribe(function() {
   }
 });
 
-////////// global helper functions ////////////
-function createStream(details) {
-  return Streams.insert({
-    name: details.name, 
-    owners: (details.owners) ? details.owners : [Meteor.userId()],
-    status: (details.status) ? details.status : "active",
-    joiners: [],
-    points: []
-  });
-};
-
 function uniqueStreamName(newName) {
   return Streams.findOne({name: newName});
 };
@@ -224,9 +213,11 @@ Template.myStreams.events = {
   'click #createNewStreamBtn' : function() {
     if($("#newStreamName").val()!="") {
       if (!uniqueStreamName($("#newStreamName").val())) {
-        createStream({
-          name: $("#newStreamName").val(),
-          owners: [Meteor.userId()],
+        Meteor.call('createNewStream', $("#newStreamName").val(), function(error, result) {
+          if(error)
+            alert(error);
+          if(result)
+            console.log('new stream created!');
         });
         $("#newStreamCreate").toggle();
       } else {
@@ -279,6 +270,10 @@ Template.ownerView.rendered = function() {
   });
 };
 
+Template.ownerView.shortUrl = function() {
+  return Streams.findOne(Session.get("currentStream")).shortUrl;
+};
+
 Template.singleStreamItem.namesOfPeopleWhoJoined = function() {
   if(Meteor.userLoaded()) {
     var names = "";
@@ -301,6 +296,9 @@ Template.singleStreamItem.namesOfPeopleWhoJoined = function() {
 Template.ownerView.events = {
   'click .viewFeedback' : function(e) {
     $(e.srcElement).siblings('.modal').modal('show');
+  },
+  'click #inviteOpenButton' : function() {
+    $(".inviteModal").modal("show");
   },
   'click .navigatePoints' : function(e) {
     var currentPoints = getCurrentStreamPoints();
