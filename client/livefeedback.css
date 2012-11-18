@@ -15,7 +15,12 @@ li.point {
 	padding: 10px;
 	border: solid 1px #CCC;
 	border-radius: 5px;
+	line-height:22px;
 	/*cursor: pointer*/
+}
+input.pointEditor {
+	margin: 0px;
+	padding: 0px;
 }
 ul.points {
 	margin:0;
@@ -119,4 +124,7 @@ div#spinner
     z-index:2;
     overflow: auto;
     border-radius: 10px;
+}
+div.pointContent {
+	display: inline;
 }

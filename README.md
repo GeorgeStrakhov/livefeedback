@@ -26,20 +26,20 @@ data structure
 * user -> Meteor.user()
 * Streams -> Meteor Collection
 * each stream -> object {
-  ._id: -> meteor id
-  name: "name"
-  owners: [Meteor.userId(), ...] //grant permission fucntionality - add email
-  status: "active" || "finished",
-  joiners: [userId, userId, userId...],
-  points: [{point}, {point}, {point}...],
+    ._id: -> meteor id
+    name: "name"
+    owners: [Meteor.userId(), ...] //grant permission functionality - add email
+    status: "active" || "finished",
+    joiners: [userId, userId, userId...],
+    points: [{point}, {point}, {point}...],
+    activePoint: i // points[i]
   }
 * each point -> object {
-  timestamp: new Date(),
-  content: "html string",
-  isActive: true || false,
-  comments: [{from: userId, text:""},{from: userID, text: ""}...],
-  thumbsUp: [userId, userId, ...]
-  thumbsDown: [userId, userId, userId...]
+    timestamp: new Date(),
+    content: "html string",
+    comments: [{from: userId, text:""},{from: userID, text: ""}...],
+    thumbsUp: [userId, userId, ...]
+    thumbsDown: [userId, userId, userId...]
   }
 
 Session variables (managing client side state), registered as handlebars helpers, accessible from any template, always up to date,

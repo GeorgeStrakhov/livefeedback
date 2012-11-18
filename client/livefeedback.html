@@ -163,14 +163,13 @@
           {{/if}}
           </li>
           {{#each currentStream.points}}
-            <li class="{{#if this.isActive}}active {{/if}}point">
               {{> singlePointTemplate}}
-            </li>
+
           {{/each}}
           <li class="addNewPointContainer">
             <textarea rows='3' type="text" id="newPointContent" placeholder="type any HTML and be happy" class="inputNewPoint"/>
-            <button class="btn btn-block btn-large" id="newPointBtn">Add a new point</button>
-            <button class="btn btn-block btn-success btn-large" id="newPointBtnAndActivate">Add a new point and make it active</button>
+            <button class="btn btn-block btn-large newPointBtn">Add a new point</button>
+            <button class="btn btn-block btn-success btn-large newPointBtn makeActive">Add a new point and make it active</button>
             <div class="btn-group" style="width:100%">
               <button class='btn btn-large navigatePoints' style="width:50%" data-navigate="up"><i class="icon-arrow-up"></i> Previous point</button>
               <button class='btn btn-large navigatePoints' style="width:50%"data-navigate="down">Next point <i class="icon-arrow-down"></i></button>
@@ -211,16 +210,18 @@
 </template>
 
 <template name="singlePointTemplate">
-  {{> modalTemplate}}
-  <button class="btn btn-primary btn-mini viewFeedback">{{AllComments}}</button>
-  <span class="badge badge-success">{{allThumbsUp}}</span>
-  <span class="badge badge-important">{{allThumbsDown}}</span>
-  <span class="content">{{{this.content}}}</span>
-  <div class="btn-group pull-right">
-    <button class="edit btn btn-mini">edit</button>
-    <button class="delete btn btn-danger btn-mini">delete</button>
-    <button class="makeActive btn btn-success btn-mini">activate</button>
-  </div>
+ <li class="{{#if isActive }}active {{/if}}point">
+    {{> modalTemplate}}
+    <button class="btn btn-primary btn-mini viewFeedback">{{AllComments}}</button>
+    <span class="badge badge-success">{{allThumbsUp}}</span>
+    <span class="badge badge-important">{{allThumbsDown}}</span>
+    <div class="pointContent">{{{this.content}}}</div>
+    <div class="btn-group pull-right">
+      <button class="edit btn btn-mini">edit</button>
+      <button class="delete btn btn-danger btn-mini">delete</button>
+      <button class="makeActive btn btn-success btn-mini">activate</button>
+    </div>
+  </li>
 </template>
 
 <template name="modalTemplate">
@@ -283,6 +284,7 @@
         <tr><td>
         <button id="voteDown" class="btn btn-large btn-block btn-danger" type="button">Vote Down</button>
         </td></tr>
+      </table>
       {{/if}}
     {{else}}
       <div>no active point</div>

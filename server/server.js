@@ -33,8 +33,8 @@ Streams = new Meteor.Collection("streams");
 
 Meteor.methods({
   'test': function(bb) {
-    //console.log(bb);
-    return "something interesting "+bb;
+    console.log(Streams.findOne());
+      // return "something interesting "+bb;
     //throw new Meteor.Error(404, bb+"Can't find my pants");
   },
   'addCollaborator' : function(email, streamId) {

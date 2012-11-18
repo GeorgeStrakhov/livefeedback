@@ -10,10 +10,12 @@ function setStreamOwner(ownerId){
 }
 
 function getActivePoint(){
-  var points = getCurrentStreamPoints();
-  for (i=0; i<points.length; i++) {
-    if (points[i].isActive) return points[i];
-  }
+  var currentStream = getCurrentStream();
+  return currentStream.points[currentStream.activePoint]
+  // var points = getCurrentStreamPoints();
+  // for (i=0; i<points.length; i++) {
+  //   if (points[i].isActive) return points[i];
+  // }
 }
 
 var thisPoint = {
