@@ -18,15 +18,14 @@ Handlebars.registerHelper("currentStreamStatus", function(status) { //current ap
 Handlebars.registerHelper("activePoint", function() {
   var currentStream = Streams.findOne(Session.get("currentStream"));
   return currentStream.points[currentStream.activePoint];
-  // var currentStream = Streams.findOne(Session.get("currentStream"));
-  // for (i=0; i<currentStream.points.length; i++) {
-  //   if (currentStream.points[i].isActive)
-  //     return currentStream.points[i];
-  // }
 });
 
 Handlebars.registerHelper("myOwnStream", function() {
   return Session.get("myOwnStream");
+});
+
+Handlebars.registerHelper("invitation", function() {
+  return Session.get("invitation");
 });
 
 Meteor.autosubscribe(function() {
@@ -45,6 +44,8 @@ Meteor.autosubscribe(function() {
 });
 
 ////////// global helper functions ////////////
+
+
 function createStream(details) {
   return Streams.insert({
     name: details.name, 
@@ -68,9 +69,7 @@ function createPoint(details) {
     thumbsUp: [],
     thumbsDown: []
   };
-  Streams.update(
-    {_id: Session.get("currentStream")}, 
-    {$push: {points: newPoint}});
+  updateCurrentStream($push: {points: newPoint}});
   return newPoint;
 };
 
@@ -101,63 +100,20 @@ function updateCurrentStream(obj){
   Streams.update(Session.get("currentStream"),obj);
 }
 
-// function editPoint(point, details) {
-//   var allPoints = getCurrentStreamPoints();
-//   $.each(allPoints, function(i){
-//     if (typeof details.isActive != 'undefined') {
-//       allPoints[i].isActive = false;
-//     };
-//     if (this.timestamp == point.timestamp) {
-//       $.each(details, function(attr) {
-//         allPoints[i][attr] = details[attr];
-//       });
-//     }
-//   });
-//   console.log({_id: Session.get("currentStream"),'points.timestamp':point.timestamp});
-//   Streams.update(
-//     {_id: Session.get("currentStream")},
-//     {$set: {points: allPoints}});
-// };
-
 function editPoint(point, details) {
-  // var allPoints = getCurrentStreamPoints();
-  // $.each(allPoints, function(i){
-  //   if (typeof details.isActive != 'undefined') {
-  //     allPoints[i].isActive = false;
-  //   };
-  //   if (this.timestamp == point.timestamp) {
-  //     $.each(details, function(attr) {
-  //       allPoints[i][attr] = details[attr];
-  //     });
-  //   }
-  // });
-
-  // if (typeof details.isActive != 'undefined') {
-  //   makeAllPointsInActive();
-  // }
   if(!point.timestamp) return false;
   var objSet = {};
   for (var key in details) {
     objSet['points.$.'+ key] = details[key];
   }; 
+  console.log(details);
   Streams.update(
     {_id: Session.get("currentStream"),'points.timestamp': point.timestamp},
     {$set: objSet});
 };
 
-
 function getCurrentStreamPoints() { // just get all current points
   return Streams.findOne(Session.get("currentStream")).points;
-}
-
-function makeAllPointsInActive() {
-  Streams.update(
-    {_id: Session.get("currentStream")},
-    {$set: {activePoint: null}});
-}
-
-function updateCurrentStream(obj) {
-  Streams.update({_id: Session.get("currentStream")}, obj);
 }
 
 function deletePoint(point) {
@@ -181,26 +137,6 @@ function deletePoint(point) {
   }
 }
 
-function setActivePoint(which) { //which can be "next", "prev" or "rand"
-  console.log("not ready yet!");
-  /* FIX!
-  var points = Streams.findOne(Session.get("currentStream")).points;
-  $.each(Streams.findOne(Session.get("currentStream")).points, function(i) {
-    console.log(i);
-    //Streams.update({_id: Session.get("currentStream")}, {$set: {points[i].isActive: false}});
-  }); //setting every point to passive
-  
-  if(which == "rand") {
-    //random point!
-  }
-  $.each(points, function() {
-    if(this.isActive) {
-      console.log("active point!");
-    }
-  });
-  */
-};
-
 ////////// Template specific behavior ////////////
 
 Template.welcome.events = {
@@ -210,8 +146,30 @@ Template.welcome.events = {
   },
   'click #learnMoreLink' : function(e) {
     e.preventDefault();
-    $("#learnMoreDiv").show('slow');
+    $("#learnMoreDiv").toggle('slow');
   },
+};
+
+Template.signIn.events = {
+  'click #signInButton' : function(e) {
+    e.preventDefault();
+    Meteor.loginWithFacebook();
+  }
+};
+
+Template.invitation.events = {
+  'click #signInButton' : function(e) {
+    e.preventDefault();
+    Meteor.loginWithFacebook(function() {
+      Meteor.call('pendingOwnerJoined', Session.get("currentStream"), function(error, result) {
+        if(error)
+          alert(error.reason);
+        if(result)
+          console.log(result);
+          Router.navigate("stream/"+Session.get("currentStream"), true);
+      });
+    });
+  }
 };
 
 Template.myStreams.allStreams = function() {
@@ -239,9 +197,11 @@ Template.myStreams.events = {
   'click #createNewStreamBtn' : function() {
     if($("#newStreamName").val()!="") {
       if (!uniqueStreamName($("#newStreamName").val())) {
-        createStream({
-          name: $("#newStreamName").val(),
-          owners: [Meteor.userId()],
+        Meteor.call('createNewStream', $("#newStreamName").val(), function(error, result) {
+          if(error)
+            alert(error);
+          if(result)
+            console.log('new stream created!');
         });
         $("#newStreamCreate").toggle();
       } else {
@@ -294,6 +254,10 @@ Template.ownerView.rendered = function() {
   });
 };
 
+Template.ownerView.shortUrl = function() {
+  return Streams.findOne(Session.get("currentStream")).shortUrl;
+};
+
 Template.singleStreamItem.namesOfPeopleWhoJoined = function() {
   if(Meteor.userLoaded()) {
     var names = "";
@@ -316,6 +280,9 @@ Template.singleStreamItem.namesOfPeopleWhoJoined = function() {
 Template.ownerView.events = {
   'click .viewFeedback' : function(e) {
     $(e.srcElement).siblings('.modal').modal('show');
+  },
+  'click #inviteOpenButton' : function() {
+    $(".inviteModal").modal("show");
   },
   'click .navigatePoints' : function(e) {
     var currentStream = Streams.findOne({_id: Session.get("currentStream")});
@@ -356,7 +323,6 @@ Template.ownerView.events = {
   'click .edit' : function(e) {
     var editButton = $(e.srcElement);
     var pointContent = editButton.parents('li').find('div.pointContent');
-
     if(!this.editing) {
       this.editing = true;
       var currentHtml = pointContent.html();
@@ -369,8 +335,9 @@ Template.ownerView.events = {
     } else {
       this.editing = false;
       editButton.text('edit');
-      pointContent.html(pointContent.children('input').val());
-      editPoint(this, {content: pointContent.children('input').val()}); 
+      var newContent = pointContent.children('input').val();
+      pointContent.html(newContent);
+      editPoint(this, {content: newContent}); 
     }
   }, 
   'click .makeActive' : function(e) {
@@ -405,9 +372,6 @@ Template.ownerView.events = {
   }
 };
 
-
-
-
 // singleModeratorsTemplate
 
 Template.singleModeratorsTemplate.owners = function() {
@@ -435,7 +399,7 @@ Template.singlePointTemplate.allThumbsDown = function() {
   return (this.thumbsDown.length == 0) ? '0' : '-'+this.thumbsDown.length.toString();
 };
 Template.singlePointTemplate.AllComments = function() {
-  return (this.comments.length.toString() == '1') ? (this.comments.length.toString() + ' feedback') : (this.comments.length.toString() + ' feedbacks');
+  return (this.comments.length.toString() == '1') ? (this.comments.length.toString() + ' comment') : (this.comments.length.toString() + ' comments');
 };
 
 // modalTemplate
@@ -449,6 +413,7 @@ Template.modalTemplate.comments = function() {
 var StreamsRouter = Backbone.Router.extend({
   routes: {
     "stream/:streamId": "stream",
+    "invite/:streamId": "invite",
     "": "main",
     "myStreams": "main",
     "*stuff": "main"
@@ -460,8 +425,13 @@ var StreamsRouter = Backbone.Router.extend({
     Session.set("currentStream", streamId);
     Session.set("urlPart", true);
   },
+  invite: function (streamId) { //this happens when a new user is invited to be a collaborator that was not a user before
+    Session.set("currentStream", streamId);
+    Session.set("urlPart", true);
+    Session.set("invitation", true);
+  },
   setStream: function (streamId) {
-    this.navigate("stream/".streamId, true);
+    this.navigate("stream/"+streamId, true);
   }
 });
 

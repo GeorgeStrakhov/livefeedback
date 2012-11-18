@@ -58,11 +58,11 @@
   </div>
   <div class="row hide" id="learnMoreDiv">
       <div class="span12 box drop-shadow">
-        <article>
+        <div class="about">
           <p><a href="http://www.livefeedback.mobi">LiveFeedback.mobi</a> is a simple system that allows everybody (event managers, speakers, workshop facilitators etc.) to get continuous live feedback from their audience. Setup in 30 seconds and no special hardware required.</p>
           <p>Event organizers can create Streams of content (text, questions, urls, pictures) corresponding their events, and then collect live feedback from the audience. Basic functionality is available for free. For additional fee (per session) organizers can get deep data insights their audiences as well as follow-up with them to learn more.</p>
           <p>Event participants can scan a code or enter a url (once!) and then provide their feedback (thumbs up / down and optionally a comment) to anything that’s happening.</p>
-        </article>
+        </div>
       </div>
   </div>
   <div class="row footer">
@@ -89,7 +89,7 @@
   <div>
     <ul class="streams">
       {{#if noStreamsYet}}
-        <li>looks like you haven't created any streams yet...</li>
+        <li>loading...</li>
       {{/if}}
       {{#each allStreams}}
         {{> singleStreamItem}}
@@ -142,8 +142,18 @@
 </template>
 
 <template name="signIn">
+  {{#if invitation}}
+    {{> invitation}}
+  {{else}}
+    <h1>Hello!</h1>
+    <p>In order to provide your live feedback to the stream called "{{currentStream.name}}", please <a href="#" class="signup" id="signInButton">Sign in with Facebook</a> </p>
+    <p>this live feedback is powered by <a href="http://livefeedback.mobi" target="_blank">LiveFeedback.mobi</a></p>
+  {{/if}}
+</template>
+
+<template name="invitation">
   <h1>Hello!</h1>
-  <p>In order to provide your live feedback to the stream called "{{currentStream.name}}", please {{loginButtons}} </p>
+  <p>In order to help moderate the stream called "{{currentStream.name}}", please <br /><a href="#" class="signup" id="signInButton">Sign in with Facebook</a> </p>
   <p>this live feedback is powered by <a href="http://livefeedback.mobi" target="_blank">LiveFeedback.mobi</a></p>
 </template>
 
@@ -154,6 +164,9 @@
         <h3>Stream points - <strong>{{currentStream.name}}</strong> </h3>
         <ul class="points">
           <li class="navItems"><a href="/">go back to my streams</a></li>
+          {{#if currentStreamStatus "active"}}
+              <li class="navItems"><button class="btn btn-small" id="inviteOpenButton">invite others</button></li>
+          {{/if}}
           <li class="navItems">Current stream <strong>({{currentStream.name}})</strong> is 
           {{#if currentStreamStatus "active"}}
           <span class="label label-success">ACTIVE</span> 
@@ -205,6 +218,21 @@
         </div>
 
       </div>
+    </div>
+  </div>
+  <!--inviteModal-->
+  <div class="modal hide inviteModal">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h3>Invite</h3>
+    </div>
+    <div class="modal-body" style="text-align: center">
+      {{#if shortUrl}}
+        <p><img src="{{shortUrl}}.qr" /></p>
+        <p>{{shortUrl}}</p>
+      {{else}}
+        <p>QR code & shortlink are still being generated... Please close this message and reopen it in a few seconds.</p>
+      {{/if}}
     </div>
   </div>
 </template>
@@ -268,7 +296,7 @@
           </div>
           <div id="pointFeedback" class="container-feedback">
              <div class="input-append center">
-              <input class="" type="text" id="pointFeedbackText" size="auto" placeholder="Leave some feedback!" />
+              <input class="" type="text" id="pointFeedbackText" size="auto" placeholder="Leave a comment here!" />
               <button class="btn"  type="button" id="pointFeedbackButton">Submit</button>
             </div>
           </div>
