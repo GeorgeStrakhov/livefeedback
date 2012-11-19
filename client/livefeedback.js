@@ -69,7 +69,7 @@ function createPoint(details) {
     thumbsUp: [],
     thumbsDown: []
   };
-  updateCurrentStream($push: {points: newPoint}});
+  updateCurrentStream({$push: {points: newPoint}});
   return newPoint;
 };
 
