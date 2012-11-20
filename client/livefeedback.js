@@ -74,7 +74,7 @@ function createPoint(details) {
 };
 
 function addJoiner() {
-  if(Meteor.userLoaded()) {
+  if(Meteor.userId()) {
     if(Session.get("currentStream")) {
       var notAJoiner = true;
       var notAnOwner = true;
@@ -177,7 +177,8 @@ Template.myStreams.allStreams = function() {
   return allStreams;
 };
 Template.myStreams.userName = function() {
-  if(Meteor.userLoaded()) return Meteor.user().profile.name
+  if(Meteor.userId() && Meteor.user().profile)
+    return Meteor.user().profile.name;
 };
 
 Template.myStreams.noStreamsYet = function() {
@@ -259,7 +260,7 @@ Template.ownerView.shortUrl = function() {
 };
 
 Template.singleStreamItem.namesOfPeopleWhoJoined = function() {
-  if(Meteor.userLoaded()) {
+  if(Meteor.userId()) {
     var names = "";
     $.each(this.joiners, function() {
     //console.log(this.toString());
